@@ -4,20 +4,15 @@ import com.cohere.api.Cohere;
 import com.cohere.api.resources.v2.requests.V2RerankRequest;
 import com.cohere.api.resources.v2.types.V2RerankRequestDocumentsItem;
 import com.cohere.api.resources.v2.types.V2RerankResponse;
-import com.cohere.api.resources.v2.types.V2RerankResponseResultsItem;
-
 import org.springframework.ai.chat.client.advisor.api.*;
 import org.springframework.ai.document.Document;
-import org.springframework.ai.vectorstore.SearchRequest;
-import org.springframework.ai.vectorstore.VectorStore;
-import org.springframework.ai.vectorstore.filter.Filter;
-import org.springframework.ai.vectorstore.filter.FilterExpressionTextParser;
 import org.springframework.util.Assert;
 import org.springframework.util.StringUtils;
 import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
 import reactor.core.scheduler.Schedulers;
 
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -44,9 +39,8 @@ public class RerankQuestionAnswerAdvisor implements CallAroundAdvisor, StreamAro
     private static final float DEFAULT_RELEVANCY_THRESHOLD = 0.7f;
     private static final String DEFAULT_MODEL = "rerank-english-v3.0";
 
-    private final VectorStore vectorStore;
+    private final List<DataSource> dataSources;
     private final Cohere cohere;
-    private final SearchRequest searchRequest;
     private final String userTextAdvise;
     private final boolean protectFromBlocking;
     private final int order;
@@ -57,25 +51,18 @@ public class RerankQuestionAnswerAdvisor implements CallAroundAdvisor, StreamAro
     public static final String FILTER_EXPRESSION = "qa_filter_expression";
     public static final String RELEVANCY_THRESHOLD_PARAM = "relevancy_threshold";
 
-    public RerankQuestionAnswerAdvisor(VectorStore vectorStore, String cohereApiKey) {
-        this(vectorStore, cohereApiKey, SearchRequest.defaults(), DEFAULT_USER_TEXT_ADVISE,
-            true, DEFAULT_ORDER, DEFAULT_MODEL, DEFAULT_RELEVANCY_THRESHOLD);
-    }
-
-    public RerankQuestionAnswerAdvisor(VectorStore vectorStore, String cohereApiKey,
-                                       SearchRequest searchRequest, String userTextAdvise, boolean protectFromBlocking,
-                                       int order, String model, float relevancyThreshold) {
-        Assert.notNull(vectorStore, "VectorStore must not be null");
+    private RerankQuestionAnswerAdvisor(List<DataSource> dataSources, String cohereApiKey,
+                                        String userTextAdvise, boolean protectFromBlocking,
+                                        int order, String model, float relevancyThreshold) {
+        Assert.notEmpty(dataSources, "At least one DataSource must be provided");
         Assert.hasText(cohereApiKey, "Cohere API key must not be empty");
-        Assert.notNull(searchRequest, "SearchRequest must not be null");
         Assert.hasText(userTextAdvise, "UserTextAdvise must not be empty");
 
-        this.vectorStore = vectorStore;
+        this.dataSources = dataSources;
         this.cohere = Cohere.builder()
             .token(cohereApiKey)
             .clientName("spring-ai-rerank")
             .build();
-        this.searchRequest = searchRequest;
         this.userTextAdvise = userTextAdvise;
         this.protectFromBlocking = protectFromBlocking;
         this.order = order;
@@ -125,14 +112,17 @@ public class RerankQuestionAnswerAdvisor implements CallAroundAdvisor, StreamAro
             ? Float.parseFloat(context.get(RELEVANCY_THRESHOLD_PARAM).toString())
             : this.relevancyThreshold;
 
-        // Search for similar documents
-        var searchRequestToUse = SearchRequest.from(this.searchRequest)
-            .withQuery(request.userText())
-            .withFilterExpression(doGetFilterExpression(context));
+        String filterExpression = context.containsKey(FILTER_EXPRESSION) ?
+            context.get(FILTER_EXPRESSION).toString() : null;
 
-        List<Document> documents = this.vectorStore.similaritySearch(searchRequestToUse);
+        // Search all data sources in parallel and collect results
+        List<Document> documents = Flux.fromIterable(dataSources)
+            .flatMap(source -> source.search(request.userText(), filterExpression))
+            .collectList()
+            .block(); // Safe to block here as we're already in a blocking context
+
         System.out.println("Question: " + request.userText());
-        System.out.println("Found " + documents.size() + " documents");
+        System.out.println("Found " + documents.size() + " documents across all sources");
 
         // Convert documents for reranking
         List<V2RerankRequestDocumentsItem> rerankDocs = documents.stream()
@@ -154,7 +144,7 @@ public class RerankQuestionAnswerAdvisor implements CallAroundAdvisor, StreamAro
             .map(result -> documents.get(result.getIndex()))
             .collect(Collectors.toList());
 
-        System.out.println("Filtered to " + relevantDocs.size() + " documents");
+        System.out.println("Filtered to " + relevantDocs.size() + " relevant documents");
 
         context.put(RETRIEVED_DOCUMENTS, relevantDocs);
 
@@ -185,14 +175,6 @@ public class RerankQuestionAnswerAdvisor implements CallAroundAdvisor, StreamAro
         return new AdvisedResponse(chatResponseBuilder.build(), advisedResponse.adviseContext());
     }
 
-    protected Filter.Expression doGetFilterExpression(Map<String, Object> context) {
-        if (!context.containsKey(FILTER_EXPRESSION)
-            || !StringUtils.hasText(context.get(FILTER_EXPRESSION).toString())) {
-            return this.searchRequest.getFilterExpression();
-        }
-        return new FilterExpressionTextParser().parse(context.get(FILTER_EXPRESSION).toString());
-    }
-
     private Predicate<AdvisedResponse> onFinishReason() {
         return (advisedResponse) -> advisedResponse.response()
             .getResults()
@@ -201,31 +183,24 @@ public class RerankQuestionAnswerAdvisor implements CallAroundAdvisor, StreamAro
                 && StringUtils.hasText(result.getMetadata().getFinishReason()));
     }
 
-    public static Builder builder(VectorStore vectorStore, String cohereApiKey) {
-        return new Builder(vectorStore, cohereApiKey);
+    public static Builder builder(List<DataSource> dataSources, String cohereApiKey) {
+        return new Builder(dataSources, cohereApiKey);
     }
 
     public static class Builder {
-        private final VectorStore vectorStore;
+        private final List<DataSource> dataSources;
         private final String cohereApiKey;
-        private SearchRequest searchRequest = SearchRequest.defaults();
         private String userTextAdvise = DEFAULT_USER_TEXT_ADVISE;
         private boolean protectFromBlocking = true;
         private int order = DEFAULT_ORDER;
         private String model = DEFAULT_MODEL;
         private float relevancyThreshold = DEFAULT_RELEVANCY_THRESHOLD;
 
-        private Builder(VectorStore vectorStore, String cohereApiKey) {
-            Assert.notNull(vectorStore, "VectorStore must not be null");
+        private Builder(List<DataSource> dataSources, String cohereApiKey) {
+            Assert.notEmpty(dataSources, "At least one DataSource must be provided");
             Assert.hasText(cohereApiKey, "Cohere API key must not be empty");
-            this.vectorStore = vectorStore;
+            this.dataSources = new ArrayList<>(dataSources);
             this.cohereApiKey = cohereApiKey;
-        }
-
-        public Builder withSearchRequest(SearchRequest searchRequest) {
-            Assert.notNull(searchRequest, "SearchRequest must not be null");
-            this.searchRequest = searchRequest;
-            return this;
         }
 
         public Builder withUserTextAdvise(String userTextAdvise) {
@@ -259,9 +234,8 @@ public class RerankQuestionAnswerAdvisor implements CallAroundAdvisor, StreamAro
 
         public RerankQuestionAnswerAdvisor build() {
             return new RerankQuestionAnswerAdvisor(
-                this.vectorStore,
+                this.dataSources,
                 this.cohereApiKey,
-                this.searchRequest,
                 this.userTextAdvise,
                 this.protectFromBlocking,
                 this.order,

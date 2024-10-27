@@ -18,6 +18,7 @@ import org.springframework.ai.chat.memory.ChatMemory;
 import org.springframework.ai.chat.model.ChatModel;
 import org.springframework.ai.reader.tika.TikaDocumentReader;
 import org.springframework.ai.transformer.splitter.TokenTextSplitter;
+import org.springframework.ai.vectorstore.SearchRequest;
 import org.springframework.ai.vectorstore.VectorStore;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.core.io.InputStreamResource;
@@ -25,7 +26,9 @@ import org.springframework.core.io.Resource;
 import org.vaadin.firitin.components.messagelist.MarkdownMessage;
 import org.vaadin.marcus.enterpriseai.advisors.RerankQuestionAnswerAdvisor;
 import org.vaadin.marcus.enterpriseai.advisors.StandaloneQuestionAdvisor;
+import org.vaadin.marcus.enterpriseai.advisors.VectorStoreDataSource;
 
+import java.util.List;
 import java.util.UUID;
 
 @Route("")
@@ -34,13 +37,12 @@ public class RagChat extends VerticalLayout {
 
     private ChatClient ai;
     private final VectorStore vectorStore;
-    private String chatId = UUID.randomUUID().toString();
+    private final String chatId = UUID.randomUUID().toString();
+    private final String cohereApiKey;
 
-    @Value("${cohere.api.key}")
-    private String cohereApiKey;
-
-    public RagChat(ChatModel chatModel, VectorStore vectorStore, ChatMemory chatMemory) {
+    public RagChat(ChatModel chatModel, VectorStore vectorStore, ChatMemory chatMemory, @Value("${cohere.api.key}") String cohereApiKey) {
         this.vectorStore = vectorStore;
+        this.cohereApiKey = cohereApiKey;
         configureChatClient(chatModel, vectorStore, chatMemory);
 
         buildView();
@@ -102,7 +104,10 @@ public class RagChat extends VerticalLayout {
             .defaultAdvisors(
                 new MessageChatMemoryAdvisor(chatMemory),
                 new StandaloneQuestionAdvisor(standaloneChatClient, -1),
-                RerankQuestionAnswerAdvisor.builder(vectorStore, cohereApiKey).build()
+                RerankQuestionAnswerAdvisor.builder(
+                        List.of(new VectorStoreDataSource(vectorStore, SearchRequest.defaults())),
+                        cohereApiKey)
+                    .build()
             )
             .build();
     }

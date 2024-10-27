@@ -53,9 +53,7 @@ public class StandaloneQuestionAdvisor implements CallAroundAdvisor, StreamAroun
         if (!isRewriteNeeded(advisedRequest.messages())) {
             return chain.nextAroundCall(advisedRequest);
         }
-        System.out.println("Original question: " + advisedRequest.userText());
         String standaloneQuestion = generateStandaloneQuestion(advisedRequest);
-        System.out.println("Standalone question: " + standaloneQuestion);
         AdvisedRequest modifiedRequest = createModifiedRequest(advisedRequest, standaloneQuestion);
         return chain.nextAroundCall(modifiedRequest);
     }
@@ -87,6 +85,8 @@ public class StandaloneQuestionAdvisor implements CallAroundAdvisor, StreamAroun
     }
 
     private String generateStandaloneQuestion(AdvisedRequest advisedRequest) {
+        System.out.println("Original question: " + advisedRequest.userText());
+
         String chatHistory = formatChatHistory(advisedRequest.messages());
 
         String promptTemplate = """
@@ -99,7 +99,7 @@ public class StandaloneQuestionAdvisor implements CallAroundAdvisor, StreamAroun
             
             Standalone Question:""";
 
-        return this.chatClient
+        String standaloneQuestion = this.chatClient
             .prompt()
             .system("You are a helpful assistant that rephrases questions to be standalone, removing dependencies on chat history.")
             .user(u -> u.text(promptTemplate)
@@ -108,6 +108,8 @@ public class StandaloneQuestionAdvisor implements CallAroundAdvisor, StreamAroun
             )
             .call()
             .content();
+        System.out.println("Standalone question: " + standaloneQuestion);
+        return standaloneQuestion;
     }
 
     private AdvisedRequest createModifiedRequest(AdvisedRequest original, String standaloneQuestion) {
