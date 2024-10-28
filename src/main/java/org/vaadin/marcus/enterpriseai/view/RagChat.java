@@ -105,7 +105,10 @@ public class RagChat extends VerticalLayout {
                 new MessageChatMemoryAdvisor(chatMemory),
                 new StandaloneQuestionAdvisor(standaloneChatClient, -1),
                 RerankQuestionAnswerAdvisor.builder(
-                        List.of(new VectorStoreDataSource(vectorStore, SearchRequest.defaults())),
+                        List.of(
+                            new VectorStoreDataSource(vectorStore, SearchRequest.defaults())
+                            // Could include DataSources like internet, keyword search, etc
+                        ),
                         cohereApiKey)
                     .build()
             )
