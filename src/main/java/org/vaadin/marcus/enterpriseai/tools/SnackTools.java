@@ -21,7 +21,7 @@ public class SnackTools {
         "Berlin", List.of("Currywurst", "Bockwurst", "Beer"),
         "Munich", List.of("Weisswurst", "Pretzel", "Beer"),
         "Hamburg", List.of("Fischbrötchen", "Labskaus", "Beer"),
-        "Frankfurt", List.of("Frankfurter", "Sauerkraut", "Beer")
+        "Frankfurt", List.of("Rippchen", "Grüne Soße", "Apfelwein")
     );
 
     @Bean
