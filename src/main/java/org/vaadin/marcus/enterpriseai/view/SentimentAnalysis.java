@@ -18,8 +18,8 @@ import org.vaadin.marcus.enterpriseai.data.Sentiment;
 import org.vaadin.marcus.enterpriseai.view.components.Badge;
 import org.vaadin.marcus.enterpriseai.view.components.Markdown;
 
-@Menu(title = "Sentiment Analysis")
 @Route
+@Menu(title = "Sentiment Analysis", order = 5)
 public class SentimentAnalysis extends VerticalLayout {
 
     private final ReviewRepository repository;

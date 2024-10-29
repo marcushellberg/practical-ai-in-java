@@ -16,8 +16,8 @@ import org.springframework.util.MimeTypeUtils;
 import java.math.BigDecimal;
 import java.util.List;
 
-@Menu(title = "Receipt Scan")
 @Route
+@Menu(title = "Receipt Scan", order = 6)
 public class ReceiptScan extends VerticalLayout {
     public record LineItem(String name, int quantity, BigDecimal price) {}
     public record Receipt(String merchant, BigDecimal total, List<LineItem> lineItems) {}

@@ -12,12 +12,16 @@ import org.springframework.ai.chat.model.ChatModel;
 import org.vaadin.marcus.enterpriseai.view.components.Markdown;
 
 @Route
-@Menu(title = "Function Calling")
+@Menu(title = "Function Calling", order = 3)
 public class FunctionCalling extends VerticalLayout {
 
     public FunctionCalling(ChatModel chatModel) {
+        var system = """
+            You are an expert on snacks and food.
+            Recommend some snacks based on what is available at a given location.
+            """;
         var chatClient = ChatClient.builder(chatModel)
-            .defaultSystem("You are an expert on snacks and food. Recommend some snacks based on what is available.")
+            .defaultSystem(system)
             .defaultFunctions("getSnacks")
             .build();
 

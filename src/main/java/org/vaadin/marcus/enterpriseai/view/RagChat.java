@@ -32,7 +32,7 @@ import java.util.List;
 import java.util.UUID;
 
 @Route("")
-@Menu(title = "RAG Chat")
+@Menu(title = "RAG Chat", order = 2)
 public class RagChat extends VerticalLayout {
 
     private ChatClient ai;

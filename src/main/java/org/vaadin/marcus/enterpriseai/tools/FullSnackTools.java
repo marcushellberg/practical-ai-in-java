@@ -9,12 +9,12 @@ import java.util.Map;
 import java.util.function.Function;
 
 @Configuration
-public class SnackTools {
+public class FullSnackTools {
 
-    public record SnackRequest(String location) {
+    public record FullSnackRequest(String location) {
     }
 
-    public record SnackResponse(List<String> snacks) {
+    public record FullSnackResponse(List<String> snacks) {
     }
 
     private final Map<String, List<String>> locationSnacks = Map.of(
@@ -26,10 +26,10 @@ public class SnackTools {
 
     @Bean
     @Description("Function to get available snacks")
-    public Function<SnackRequest, SnackResponse> getSnacks() {
-        return snackRequest -> {
+    public Function<FullSnackRequest, FullSnackResponse> getSnacks() {
+        return fullSnackRequest -> {
             System.out.println("Running getSnacks function");
-            return new SnackResponse(locationSnacks.getOrDefault(snackRequest.location(), List.of()));
+            return new FullSnackResponse(locationSnacks.getOrDefault(fullSnackRequest.location(), List.of()));
         };
     }
 }
