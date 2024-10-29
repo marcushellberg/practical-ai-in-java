@@ -41,7 +41,7 @@ public class FunctionCalling extends VerticalLayout {
 
 
         add(
-            new H2("Today's snack recommendations"),
+            new H2("FullSnack recommendations"),
             new HorizontalLayout(location, getRecommendationsButton) {{ setDefaultVerticalComponentAlignment(Alignment.BASELINE);}}
         );
     }

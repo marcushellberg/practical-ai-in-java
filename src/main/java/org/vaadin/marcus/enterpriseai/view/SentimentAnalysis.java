@@ -2,6 +2,7 @@ package org.vaadin.marcus.enterpriseai.view;
 
 import com.vaadin.flow.component.button.Button;
 import com.vaadin.flow.component.html.H1;
+import com.vaadin.flow.component.html.H2;
 import com.vaadin.flow.component.html.H3;
 import com.vaadin.flow.component.html.Paragraph;
 import com.vaadin.flow.component.orderedlayout.HorizontalLayout;
@@ -78,7 +79,8 @@ public class SentimentAnalysis extends VerticalLayout {
         var analyzeButton = new Button("Analyze Reviews", e -> analyzeReviews());
 
         add(
-            new HorizontalLayout(new H1("Sentiment Analysis"), analyzeButton) {{
+            new H1("Bob's pizza"),
+            new HorizontalLayout(new H2("Customer reviews"), analyzeButton) {{
                 setAlignItems(Alignment.CENTER);
             }},
             reviews

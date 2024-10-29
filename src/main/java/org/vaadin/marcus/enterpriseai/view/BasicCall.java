@@ -15,6 +15,7 @@ public class BasicCall extends VerticalLayout {
 
     public BasicCall(ChatModel chatModel) {
         setSizeFull();
+
         var chatClient = ChatClient.builder(chatModel)
             .build();
 
