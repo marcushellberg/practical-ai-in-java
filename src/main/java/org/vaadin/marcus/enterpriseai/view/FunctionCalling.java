@@ -12,7 +12,7 @@ import org.springframework.ai.chat.model.ChatModel;
 import org.vaadin.marcus.enterpriseai.view.components.Markdown;
 
 @Route
-@Menu(title = "Function Calling", order = 3)
+@Menu(title = "Function Calling", order = 6)
 public class FunctionCalling extends VerticalLayout {
 
     public FunctionCalling(ChatModel chatModel) {

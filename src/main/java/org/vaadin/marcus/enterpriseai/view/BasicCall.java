@@ -10,7 +10,7 @@ import org.springframework.ai.chat.model.ChatModel;
 import org.vaadin.firitin.components.messagelist.MarkdownMessage;
 
 @Route
-@Menu(title = "Basic Call", order = 1)
+@Menu(title = "Basic Calling", order = 1)
 public class BasicCall extends VerticalLayout {
 
     public BasicCall(ChatModel chatModel) {

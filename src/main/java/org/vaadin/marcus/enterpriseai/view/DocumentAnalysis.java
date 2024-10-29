@@ -25,7 +25,7 @@ import java.io.File;
 import java.io.InputStream;
 
 @Route
-@Menu(title = "Document Analysis", order = 4)
+@Menu(title = "Document Analysis", order = 2)
 public class DocumentAnalysis extends VerticalLayout {
 
     private final ChatClient chatClient;
