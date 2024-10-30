@@ -7,12 +7,11 @@ import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 
 @Push
-@Theme(value = "enterprise-ai")
 @SpringBootApplication
-public class EnterpriseAiApplication implements AppShellConfigurator {
+public class Application implements AppShellConfigurator {
 
     public static void main(String[] args) {
-        SpringApplication.run(EnterpriseAiApplication.class, args);
+        SpringApplication.run(Application.class, args);
     }
 
 }

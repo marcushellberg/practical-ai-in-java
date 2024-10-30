@@ -19,6 +19,7 @@ import java.util.List;
 @Route
 @Menu(title = "Receipt Scan", order = 4)
 public class ReceiptScan extends VerticalLayout {
+
     public record LineItem(String name, int quantity, BigDecimal price) {}
     public record Receipt(String merchant, BigDecimal total, List<LineItem> lineItems) {}
 
