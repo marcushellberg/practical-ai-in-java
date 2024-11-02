@@ -15,7 +15,7 @@
 
 The application expects you to have the following two API keys as environment variables:
 - `OPENAI_API_KEY`: OpenAI API key
-- `COHERE_API_KEY`: Cohere API key (for document re-ranking)
+- `COHERE_API_KEY`: Cohere API key for document re-ranking. See `RagChat.java` comments for more information.
 
 ## Running the examples
 

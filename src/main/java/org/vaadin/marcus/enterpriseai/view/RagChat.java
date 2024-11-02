@@ -14,6 +14,7 @@ import com.vaadin.flow.router.Route;
 import org.springframework.ai.chat.client.ChatClient;
 import org.springframework.ai.chat.client.advisor.MessageChatMemoryAdvisor;
 import org.springframework.ai.chat.client.advisor.PromptChatMemoryAdvisor;
+import org.springframework.ai.chat.client.advisor.QuestionAnswerAdvisor;
 import org.springframework.ai.chat.memory.ChatMemory;
 import org.springframework.ai.chat.model.ChatModel;
 import org.springframework.ai.reader.tika.TikaDocumentReader;
@@ -24,15 +25,12 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.core.io.InputStreamResource;
 import org.springframework.core.io.Resource;
 import org.vaadin.firitin.components.messagelist.MarkdownMessage;
-import org.vaadin.marcus.enterpriseai.advisors.RerankQuestionAnswerAdvisor;
 import org.vaadin.marcus.enterpriseai.advisors.StandaloneQuestionAdvisor;
-import org.vaadin.marcus.enterpriseai.advisors.VectorStoreDataSource;
 
-import java.util.List;
 import java.util.UUID;
 
 @Route("")
-@Menu(title = "RAG Chat", order = 5)
+@Menu(title = "RAG Chat with re-rank", order = 5)
 public class RagChat extends VerticalLayout {
 
     private ChatClient ai;
@@ -104,13 +102,18 @@ public class RagChat extends VerticalLayout {
             .defaultAdvisors(
                 new MessageChatMemoryAdvisor(chatMemory),
                 new StandaloneQuestionAdvisor(standaloneChatClient, -1),
-                RerankQuestionAnswerAdvisor.builder(
-                        List.of(
-                            new VectorStoreDataSource(vectorStore, SearchRequest.defaults())
-                            // Could include DataSources like internet, keyword search, etc
-                        ),
-                        cohereApiKey)
-                    .build()
+                // Use this if you only want to use a single VectorStore:
+                 new QuestionAnswerAdvisor(vectorStore, SearchRequest.defaults())
+
+                // Use this if you want to use multiple data sources and rerank the results:
+                // Requires COHERE_API_KEY environment variable to be set
+                // RerankQuestionAnswerAdvisor.builder(
+                //        List.of(
+                //            new VectorStoreDataSource(vectorStore, SearchRequest.defaults())
+                //            // Could include DataSources like internet, keyword search, etc
+                //        ),
+                //        cohereApiKey)
+                //    .build()
             )
             .build();
     }
