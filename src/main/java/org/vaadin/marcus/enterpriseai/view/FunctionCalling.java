@@ -1,49 +1,76 @@
 package org.vaadin.marcus.enterpriseai.view;
 
-import com.vaadin.flow.component.button.Button;
-import com.vaadin.flow.component.html.H2;
+import com.vaadin.flow.component.grid.Grid;
+import com.vaadin.flow.component.messages.MessageInput;
 import com.vaadin.flow.component.orderedlayout.HorizontalLayout;
+import com.vaadin.flow.component.orderedlayout.Scroller;
 import com.vaadin.flow.component.orderedlayout.VerticalLayout;
-import com.vaadin.flow.component.textfield.TextField;
 import com.vaadin.flow.router.Menu;
 import com.vaadin.flow.router.Route;
+import org.jetbrains.annotations.NotNull;
 import org.springframework.ai.chat.client.ChatClient;
-import org.springframework.ai.chat.model.ChatModel;
-import org.vaadin.marcus.enterpriseai.view.components.Markdown;
+import org.springframework.ai.chat.client.advisor.MessageChatMemoryAdvisor;
+import org.springframework.ai.chat.memory.ChatMemory;
+import org.vaadin.firitin.components.messagelist.MarkdownMessage;
+import org.vaadin.marcus.enterpriseai.data.Product;
+import org.vaadin.marcus.enterpriseai.service.ProductService;
 
 @Route
 @Menu(title = "Function Calling", order = 6)
-public class FunctionCalling extends VerticalLayout {
+public class FunctionCalling extends HorizontalLayout {
 
-    public static final String SYSTEM_MESSAGE = """
-        You are an expert on snacks and food.
-        Recommend some snacks based on what is available at a given location.
-        """;
-
-    public FunctionCalling(ChatClient.Builder builder) {
+    public FunctionCalling(ChatClient.Builder builder, ProductService productService, ChatMemory memory) {
+        setSizeFull();
         var chatClient = builder
-            .defaultSystem(SYSTEM_MESSAGE)
-            .defaultFunctions("getSnacks")
+            .defaultTools(productService)
+            .defaultAdvisors(new MessageChatMemoryAdvisor(memory))
             .build();
 
-        var location = new TextField("Location");
+        add(getGridLayout(productService), getChatLayout(chatClient));
+    }
 
-        var getRecommendationsButton = new Button("Get recommendations", e -> {
-            var recommendation = chatClient.prompt()
-                .user(u -> {
-                    u.text("I'm in {location} and I'm hungry, what should I eat?");
-                    u.param("location", location.getValue());
-                })
-                .call()
-                .content();
-
-            add(new Markdown(recommendation));
+    private static @NotNull VerticalLayout getGridLayout(ProductService productService) {
+        var grid = new Grid<>(Product.class);
+        grid.setItems(productService.findAll());
+        grid.setColumns("id", "name", "description", "price");
+        grid.getColumns().forEach(c -> {
+            c.setResizable(true);
+            if(!c.getKey().equals("description")) {
+                c.setAutoWidth(true);
+            }
         });
 
+        VerticalLayout layout = new VerticalLayout();
+        layout.add("All products");
+        layout.addAndExpand(grid);
+        return layout;
+    }
 
-        add(
-            new H2("FullSnack recommendations"),
-            new HorizontalLayout(location, getRecommendationsButton) {{ setDefaultVerticalComponentAlignment(Alignment.BASELINE);}}
-        );
+    private static @NotNull VerticalLayout getChatLayout(ChatClient chatClient) {
+        var chatLayout = new VerticalLayout();
+        chatLayout.setHeightFull();
+        var messages = new VerticalLayout();
+        var input = new MessageInput();
+        input.setWidthFull();
+
+        input.addSubmitListener(event -> {
+            var message = event.getValue();
+            var response = new MarkdownMessage("Bot");
+
+            messages.add(
+                new MarkdownMessage(message, "You"),
+                response
+            );
+
+            chatClient.prompt()
+                .user(event.getValue())
+                .stream()
+                .content()
+                .subscribe(response::appendMarkdownAsync);
+        });
+
+        chatLayout.addAndExpand(new Scroller(messages));
+        chatLayout.add(input);
+        return chatLayout;
     }
 }
