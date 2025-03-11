@@ -31,7 +31,7 @@ import org.vaadin.firitin.components.messagelist.MarkdownMessage;
 import java.util.UUID;
 
 @Route("")
-@Menu(title = "RAG Chat", order = 5)
+@Menu(title = "RAG Chat", order = 6)
 public class RagChat extends VerticalLayout {
 
     private ChatClient chatClient;

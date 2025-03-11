@@ -16,7 +16,7 @@ import org.vaadin.marcus.practicalai.data.Product;
 import org.vaadin.marcus.practicalai.service.ProductService;
 
 @Route
-@Menu(title = "Function Calling", order = 6)
+@Menu(title = "Function Calling", order = 5)
 public class FunctionCalling extends HorizontalLayout {
 
     public FunctionCalling(ChatClient.Builder builder, ProductService productService, ChatMemory memory) {
