@@ -72,9 +72,9 @@ public class SentimentAnalysis extends VerticalLayout {
         }
     }
 
-    public SentimentAnalysis(ReviewRepository repository, ChatModel chatModel) {
+    public SentimentAnalysis(ReviewRepository repository, ChatClient.Builder builder) {
         this.repository = repository;
-        chatClient = ChatClient.builder(chatModel).build();
+        chatClient = builder.build();
 
         var analyzeButton = new Button("Analyze Reviews", e -> analyzeReviews());
 
@@ -95,22 +95,22 @@ public class SentimentAnalysis extends VerticalLayout {
     }
 
     private void analyzeReview(Review review) {
-        var sentiment = chatClient.prompt()
+        record SentimentResponse(Sentiment sentiment) {}
+
+        var sentimentResponse = chatClient.prompt()
             .user(u -> {
                 u.text("""
                     Analyze the sentiment of the following review:
                     ----
                     {review}
                     ----
-                    
-                    Answer ONLY ONE of the following: POSITIVE, NEUTRAL, NEGATIVE
                     """);
                 u.param("review", review.getReview());
             })
             .call()
-            .content();
+            .entity(SentimentResponse.class);
 
-        review.setSentiment(Sentiment.valueOf(sentiment));
+        review.setSentiment(sentimentResponse.sentiment());
         repository.save(review);
     }
 

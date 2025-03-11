@@ -14,34 +14,77 @@ import com.vaadin.flow.router.Route;
 import org.springframework.ai.chat.client.ChatClient;
 import org.springframework.ai.chat.client.advisor.MessageChatMemoryAdvisor;
 import org.springframework.ai.chat.client.advisor.PromptChatMemoryAdvisor;
-import org.springframework.ai.chat.client.advisor.QuestionAnswerAdvisor;
+import org.springframework.ai.chat.client.advisor.RetrievalAugmentationAdvisor;
 import org.springframework.ai.chat.memory.ChatMemory;
-import org.springframework.ai.chat.model.ChatModel;
+import org.springframework.ai.rag.generation.augmentation.ContextualQueryAugmenter;
+import org.springframework.ai.rag.preretrieval.query.expansion.MultiQueryExpander;
+import org.springframework.ai.rag.preretrieval.query.transformation.CompressionQueryTransformer;
+import org.springframework.ai.rag.preretrieval.query.transformation.RewriteQueryTransformer;
+import org.springframework.ai.rag.retrieval.search.VectorStoreDocumentRetriever;
 import org.springframework.ai.reader.tika.TikaDocumentReader;
 import org.springframework.ai.transformer.splitter.TokenTextSplitter;
-import org.springframework.ai.vectorstore.SearchRequest;
 import org.springframework.ai.vectorstore.VectorStore;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.core.io.InputStreamResource;
 import org.springframework.core.io.Resource;
 import org.vaadin.firitin.components.messagelist.MarkdownMessage;
-import org.vaadin.marcus.enterpriseai.advisors.StandaloneQuestionAdvisor;
 
 import java.util.UUID;
 
 @Route("")
-@Menu(title = "RAG Chat with re-rank", order = 5)
+@Menu(title = "RAG Chat", order = 5)
 public class RagChat extends VerticalLayout {
 
-    private ChatClient ai;
+    private ChatClient chatClient;
     private final VectorStore vectorStore;
     private final String chatId = UUID.randomUUID().toString();
-    private final String cohereApiKey;
 
-    public RagChat(ChatModel chatModel, VectorStore vectorStore, ChatMemory chatMemory, @Value("${cohere.api.key}") String cohereApiKey) {
+    public RagChat(ChatClient.Builder builder, VectorStore vectorStore, ChatMemory chatMemory) {
         this.vectorStore = vectorStore;
-        this.cohereApiKey = cohereApiKey;
-        configureChatClient(chatModel, vectorStore, chatMemory);
+        chatClient = builder
+            .defaultAdvisors(
+                new MessageChatMemoryAdvisor(chatMemory),
+                RetrievalAugmentationAdvisor.builder()
+
+                    ////// 1. Pre-Retrieval
+
+                    .queryTransformers(
+                        // Rewrite question into a standalone question based on chat history. Example:
+                        // Original: What are the benefits?
+                        // Rewritten: What are the benefits of exercising?
+                        CompressionQueryTransformer.builder()
+                            .chatClientBuilder(builder.build().mutate())
+                            .build(),
+
+                        // Rewrite the query to optimize for vector search. Example:
+                        // Original: I've considered starting to run or maybe lift weights, are there benefits to that?
+                        // Rewritten: What are the benefits of exercising?
+                        RewriteQueryTransformer.builder()
+                            .chatClientBuilder(builder.build().mutate())
+                            .build()
+                    )
+
+                    // Create additional queries based on the original query to gather more relevant information. Example:
+                    // Original: What are the benefits of exercising?
+                    // New queries:
+                    // - What are the benefits of exercising?
+                    // - What are the benefits of cardio?
+                    // - What are the benefits of strength training?
+                    .queryExpander(MultiQueryExpander.builder()
+                        .chatClientBuilder(builder.build().mutate())
+                        .build())
+
+                    ////// 2. Retrieval
+                    .documentRetriever(VectorStoreDocumentRetriever.builder()
+                        .vectorStore(vectorStore)
+                        .build())
+
+                    ////// 3. Post-retrieval
+                    .queryAugmenter(ContextualQueryAugmenter.builder()
+                        .allowEmptyContext(true)
+                        .build())
+                    .build()
+            )
+            .build();
 
         buildView();
     }
@@ -69,7 +112,7 @@ public class RagChat extends VerticalLayout {
             var answer = new MarkdownMessage("Assistant");
             messageList.add(new MarkdownMessage(prompt, "You"), answer);
 
-            ai.prompt()
+            chatClient.prompt()
                 .user(prompt)
                 .advisors(a -> a.param(PromptChatMemoryAdvisor.CHAT_MEMORY_CONVERSATION_ID_KEY, chatId))
                 .stream()
@@ -86,36 +129,6 @@ public class RagChat extends VerticalLayout {
         scroller.setHeightFull();
         addAndExpand(scroller);
         add(inputLayout);
-    }
-
-    private void configureChatClient(ChatModel chatModel, VectorStore vectorStore, ChatMemory chatMemory) {
-        var standaloneChatClient = ChatClient.builder(chatModel).build();
-
-        ai = ChatClient.builder(chatModel)
-            .defaultSystem("""
-                You are a helpful assistant that can answer questions and provide guidance.
-                Use the provided context to generate a response, but do not refer to it directly.
-                
-                Bad answer: "Based on the context, the answer is..."
-                Good answer: "The answer is..."
-                """)
-            .defaultAdvisors(
-                new MessageChatMemoryAdvisor(chatMemory),
-                new StandaloneQuestionAdvisor(standaloneChatClient, -1),
-                // Use this if you only want to use a single VectorStore:
-                 new QuestionAnswerAdvisor(vectorStore, SearchRequest.defaults())
-
-                // Use this if you want to use multiple data sources and rerank the results:
-                // Requires COHERE_API_KEY environment variable to be set
-                // RerankQuestionAnswerAdvisor.builder(
-                //        List.of(
-                //            new VectorStoreDataSource(vectorStore, SearchRequest.defaults())
-                //            // Could include DataSources like internet, keyword search, etc
-                //        ),
-                //        cohereApiKey)
-                //    .build()
-            )
-            .build();
     }
 
 

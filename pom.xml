@@ -9,10 +9,10 @@
         <relativePath/> <!-- lookup parent from repository -->
     </parent>
     <groupId>org.vaadin.marcus</groupId>
-    <artifactId>enterprise-ai</artifactId>
+    <artifactId>practical-ai-examples</artifactId>
     <version>0.0.1-SNAPSHOT</version>
-    <name>enterprise-ai</name>
-    <description>Demo project for Spring Boot</description>
+    <name>practical-ai-examples</name>
+    <description>Practical AI Examples</description>
     <url/>
     <licenses>
         <license/>
@@ -28,18 +28,14 @@
     </scm>
     <properties>
         <java.version>21</java.version>
-        <spring-ai.version>1.0.0-M3</spring-ai.version>
-        <vaadin.version>24.5.0</vaadin.version>
+        <spring-ai.version>1.0.0-M6</spring-ai.version>
+        <vaadin.version>24.6.6</vaadin.version>
     </properties>
     <dependencies>
         <dependency>
             <groupId>com.vaadin</groupId>
             <artifactId>vaadin-spring-boot-starter</artifactId>
         </dependency>
-    <!--    <dependency>
-            <groupId>org.springframework.ai</groupId>
-            <artifactId>spring-ai-ollama-spring-boot-starter</artifactId>
-        </dependency>-->
         <dependency>
             <groupId>org.springframework.ai</groupId>
             <artifactId>spring-ai-openai-spring-boot-starter</artifactId>
@@ -47,11 +43,6 @@
         <dependency>
             <groupId>org.springframework.ai</groupId>
             <artifactId>spring-ai-tika-document-reader</artifactId>
-        </dependency>
-        <dependency>
-            <groupId>com.cohere</groupId>
-            <artifactId>cohere-java</artifactId>
-            <version>1.3.2</version>
         </dependency>
         <dependency>
             <groupId>com.h2database</groupId>

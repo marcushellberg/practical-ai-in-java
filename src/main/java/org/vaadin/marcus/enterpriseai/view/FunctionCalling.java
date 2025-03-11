@@ -15,13 +15,14 @@ import org.vaadin.marcus.enterpriseai.view.components.Markdown;
 @Menu(title = "Function Calling", order = 6)
 public class FunctionCalling extends VerticalLayout {
 
-    public FunctionCalling(ChatModel chatModel) {
-        var system = """
-            You are an expert on snacks and food.
-            Recommend some snacks based on what is available at a given location.
-            """;
-        var chatClient = ChatClient.builder(chatModel)
-            .defaultSystem(system)
+    public static final String SYSTEM_MESSAGE = """
+        You are an expert on snacks and food.
+        Recommend some snacks based on what is available at a given location.
+        """;
+
+    public FunctionCalling(ChatClient.Builder builder) {
+        var chatClient = builder
+            .defaultSystem(SYSTEM_MESSAGE)
             .defaultFunctions("getSnacks")
             .build();
 

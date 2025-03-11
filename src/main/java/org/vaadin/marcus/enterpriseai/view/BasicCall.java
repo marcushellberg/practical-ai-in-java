@@ -13,11 +13,10 @@ import org.vaadin.firitin.components.messagelist.MarkdownMessage;
 @Menu(title = "Basic Calling", order = 1)
 public class BasicCall extends VerticalLayout {
 
-    public BasicCall(ChatModel chatModel) {
+    public BasicCall(ChatClient.Builder builder) {
         setSizeFull();
 
-        var chatClient = ChatClient.builder(chatModel)
-            .build();
+        var chatClient = builder.build();
 
         var messages = new VerticalLayout();
         var input = new MessageInput();

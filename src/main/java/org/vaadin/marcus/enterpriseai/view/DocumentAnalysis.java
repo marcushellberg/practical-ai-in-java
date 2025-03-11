@@ -18,7 +18,6 @@ import org.apache.tika.metadata.Metadata;
 import org.apache.tika.parser.AutoDetectParser;
 import org.apache.tika.sax.BodyContentHandler;
 import org.springframework.ai.chat.client.ChatClient;
-import org.springframework.ai.chat.model.ChatModel;
 import org.vaadin.marcus.enterpriseai.view.components.Markdown;
 
 import java.io.File;
@@ -47,8 +46,8 @@ public class DocumentAnalysis extends VerticalLayout {
 
     private final Div output = new Div();
 
-    public DocumentAnalysis(ChatModel chatModel) {
-        chatClient = ChatClient.builder(chatModel).build();
+    public DocumentAnalysis(ChatClient.Builder builder) {
+        chatClient = builder.build();
         createUI();
     }
 
