@@ -1,4 +1,4 @@
-package org.vaadin.marcus.enterpriseai.data;
+package org.vaadin.marcus.practicalai.data;
 
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;

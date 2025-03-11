@@ -1,4 +1,4 @@
-package org.vaadin.marcus.enterpriseai.data;
+package org.vaadin.marcus.practicalai.data;
 
 public enum Sentiment {
     POSITIVE, NEUTRAL, NEGATIVE

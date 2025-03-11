@@ -1,7 +1,7 @@
-package org.vaadin.marcus.enterpriseai.view.components;
+package org.vaadin.marcus.practicalai.view.components;
 
 import com.vaadin.flow.component.html.Span;
-import org.vaadin.marcus.enterpriseai.data.Sentiment;
+import org.vaadin.marcus.practicalai.data.Sentiment;
 
 import java.util.List;
 

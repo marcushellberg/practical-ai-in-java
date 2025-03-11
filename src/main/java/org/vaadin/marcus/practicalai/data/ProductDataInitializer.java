@@ -1,4 +1,4 @@
-package org.vaadin.marcus.enterpriseai.data;
+package org.vaadin.marcus.practicalai.data;
 
 import org.springframework.boot.CommandLineRunner;
 import org.springframework.context.annotation.Bean;

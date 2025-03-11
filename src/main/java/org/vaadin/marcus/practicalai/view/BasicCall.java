@@ -1,4 +1,4 @@
-package org.vaadin.marcus.enterpriseai.view;
+package org.vaadin.marcus.practicalai.view;
 
 import com.vaadin.flow.component.messages.MessageInput;
 import com.vaadin.flow.component.orderedlayout.Scroller;
@@ -6,7 +6,6 @@ import com.vaadin.flow.component.orderedlayout.VerticalLayout;
 import com.vaadin.flow.router.Menu;
 import com.vaadin.flow.router.Route;
 import org.springframework.ai.chat.client.ChatClient;
-import org.springframework.ai.chat.model.ChatModel;
 import org.vaadin.firitin.components.messagelist.MarkdownMessage;
 
 @Route

@@ -2,20 +2,20 @@
 
 ## Included examples
 
-- Document summarization and analysis
-- Sentiment analysis
-- Text drafting
-- Image data extraction
-- Advanced RAG techniques
-  - Multi-source retrieval
-  - Re-ranking
-  - Question rewriting
+- Basic AI Chat - Simple chat interface with Spring AI
+- Document Analysis - Upload and analyze documents for summarization and action points
+- Sentiment Analysis - Analyze customer reviews with sentiment detection and response drafting
+- Image Data Extraction - Extract structured data from images
+- RAG Chat - Advanced Retrieval Augmented Generation with:
+  - Multi-source document retrieval
+  - Context-aware query rewriting
+  - Chat memory for conversational context
+- Function Calling - Demonstrate AI function calling capabilities with product data
 
 ## Requirements
 
-The application expects you to have the following two API keys as environment variables:
+The application expects you to have the following API key as an environment variable:
 - `OPENAI_API_KEY`: OpenAI API key
-- `COHERE_API_KEY`: Cohere API key for document re-ranking. See `RagChat.java` comments for more information.
 
 ## Running the examples
 
@@ -27,5 +27,15 @@ mvn spring-boot:run
 
 ## Using local models
 
-You can use local models with Ollama by updating the spring-ai dependency in the `pom.xml` file, and defining which models to use in the `application.properties` file.
+You can use local models with Ollama or LM Studio by updating the configuration in the `application.properties` file. Uncomment and modify the following settings:
+
+```properties
+# Local Open AI compatible (LM Studio/ollama). Be sure to change the port and model names as needed.
+#spring.ai.openai.base-url=http://localhost:1234
+#spring.ai.openai.api-key=not-needed
+#spring.ai.openai.chat.options.model=qwen2.5-7b-instruct-1m
+#spring.ai.openai.embedding.base-url=http://localhost:1234
+#spring.ai.openai.embedding.options.model=text-embedding-nomic-embed-text-v1.5-embedding
+#spring.ai.openai.embedding.api-key=not-needed
+```
 

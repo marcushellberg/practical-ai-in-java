@@ -1,4 +1,4 @@
-package org.vaadin.marcus.enterpriseai.view;
+package org.vaadin.marcus.practicalai.view;
 
 import com.vaadin.flow.component.grid.Grid;
 import com.vaadin.flow.component.messages.MessageInput;
@@ -12,8 +12,8 @@ import org.springframework.ai.chat.client.ChatClient;
 import org.springframework.ai.chat.client.advisor.MessageChatMemoryAdvisor;
 import org.springframework.ai.chat.memory.ChatMemory;
 import org.vaadin.firitin.components.messagelist.MarkdownMessage;
-import org.vaadin.marcus.enterpriseai.data.Product;
-import org.vaadin.marcus.enterpriseai.service.ProductService;
+import org.vaadin.marcus.practicalai.data.Product;
+import org.vaadin.marcus.practicalai.service.ProductService;
 
 @Route
 @Menu(title = "Function Calling", order = 6)

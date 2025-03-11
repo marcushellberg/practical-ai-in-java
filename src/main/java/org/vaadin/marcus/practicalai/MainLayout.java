@@ -1,4 +1,4 @@
-package org.vaadin.marcus.enterpriseai;
+package org.vaadin.marcus.practicalai;
 
 import com.vaadin.flow.component.applayout.AppLayout;
 import com.vaadin.flow.component.applayout.DrawerToggle;

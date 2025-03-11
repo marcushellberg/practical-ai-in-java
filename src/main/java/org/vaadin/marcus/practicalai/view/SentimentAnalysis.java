@@ -1,4 +1,4 @@
-package org.vaadin.marcus.enterpriseai.view;
+package org.vaadin.marcus.practicalai.view;
 
 import com.vaadin.flow.component.button.Button;
 import com.vaadin.flow.component.html.H1;
@@ -12,12 +12,11 @@ import com.vaadin.flow.router.Menu;
 import com.vaadin.flow.router.Route;
 import com.vaadin.flow.theme.lumo.LumoUtility;
 import org.springframework.ai.chat.client.ChatClient;
-import org.springframework.ai.chat.model.ChatModel;
-import org.vaadin.marcus.enterpriseai.data.Review;
-import org.vaadin.marcus.enterpriseai.data.ReviewRepository;
-import org.vaadin.marcus.enterpriseai.data.Sentiment;
-import org.vaadin.marcus.enterpriseai.view.components.Badge;
-import org.vaadin.marcus.enterpriseai.view.components.Markdown;
+import org.vaadin.marcus.practicalai.data.Review;
+import org.vaadin.marcus.practicalai.data.ReviewRepository;
+import org.vaadin.marcus.practicalai.data.Sentiment;
+import org.vaadin.marcus.practicalai.view.components.Badge;
+import org.vaadin.marcus.practicalai.view.components.Markdown;
 
 @Route
 @Menu(title = "Sentiment Analysis", order = 3)

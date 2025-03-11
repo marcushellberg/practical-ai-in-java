@@ -1,4 +1,4 @@
-package org.vaadin.marcus.enterpriseai.view.components;
+package org.vaadin.marcus.practicalai.view.components;
 
 import com.vaadin.flow.component.Composite;
 import com.vaadin.flow.component.html.Div;

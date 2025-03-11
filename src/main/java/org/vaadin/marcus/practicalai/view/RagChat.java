@@ -1,4 +1,4 @@
-package org.vaadin.marcus.enterpriseai.view;
+package org.vaadin.marcus.practicalai.view;
 
 import com.vaadin.flow.component.button.Button;
 import com.vaadin.flow.component.messages.MessageInput;

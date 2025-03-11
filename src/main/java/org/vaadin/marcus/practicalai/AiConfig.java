@@ -1,4 +1,4 @@
-package org.vaadin.marcus.enterpriseai;
+package org.vaadin.marcus.practicalai;
 
 import org.springframework.ai.chat.memory.ChatMemory;
 import org.springframework.ai.chat.memory.InMemoryChatMemory;
