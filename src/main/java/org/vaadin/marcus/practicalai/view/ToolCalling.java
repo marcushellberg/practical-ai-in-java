@@ -15,11 +15,11 @@ import org.vaadin.firitin.components.messagelist.MarkdownMessage;
 import org.vaadin.marcus.practicalai.data.Product;
 import org.vaadin.marcus.practicalai.service.ProductService;
 
-@Route
-@Menu(title = "Function Calling", order = 5)
-public class FunctionCalling extends HorizontalLayout {
+@Menu(title = "Tool Calling", order = 5)
+@Route("tool-calling")
+public class ToolCalling extends HorizontalLayout {
 
-    public FunctionCalling(ChatClient.Builder builder, ProductService productService, ChatMemory memory) {
+    public ToolCalling(ChatClient.Builder builder, ProductService productService, ChatMemory memory) {
         setSizeFull();
         var chatClient = builder
             .defaultTools(productService)

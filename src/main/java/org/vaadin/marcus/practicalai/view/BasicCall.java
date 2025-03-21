@@ -8,8 +8,8 @@ import com.vaadin.flow.router.Route;
 import org.springframework.ai.chat.client.ChatClient;
 import org.vaadin.firitin.components.messagelist.MarkdownMessage;
 
-@Route
 @Menu(title = "Basic Calling", order = 1)
+@Route("")
 public class BasicCall extends VerticalLayout {
 
     public BasicCall(ChatClient.Builder builder) {

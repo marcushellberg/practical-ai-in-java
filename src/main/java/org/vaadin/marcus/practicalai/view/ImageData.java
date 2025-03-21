@@ -16,10 +16,10 @@ import org.springframework.util.MimeTypeUtils;
 import java.util.ArrayList;
 import java.util.List;
 
-@Route("image-data")
 @PageTitle("Image data")
 @Menu(title = "Image data", order = 4)
-public class ImageScan extends VerticalLayout {
+@Route("image-data")
+public class ImageData extends VerticalLayout {
 
     public record Participant(String name, String company, String email, String tshirtSize) {
     }
@@ -31,7 +31,7 @@ public class ImageScan extends VerticalLayout {
 
     private List<Participant> participants = new ArrayList<>();
 
-    public ImageScan(ChatClient.Builder builder) {
+    public ImageData(ChatClient.Builder builder) {
         var client = builder.build();
 
         // Set up upload

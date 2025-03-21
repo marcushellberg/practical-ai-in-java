@@ -23,8 +23,8 @@ import org.vaadin.marcus.practicalai.view.components.Markdown;
 import java.io.File;
 import java.io.InputStream;
 
-@Route
 @Menu(title = "Document Analysis", order = 2)
+@Route("document-analysis")
 public class DocumentAnalysis extends VerticalLayout {
 
     private final ChatClient chatClient;
