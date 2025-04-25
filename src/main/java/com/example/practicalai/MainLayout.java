@@ -1,4 +1,4 @@
-package org.vaadin.marcus.practicalai;
+package com.example.practicalai;
 
 import com.vaadin.flow.component.applayout.AppLayout;
 import com.vaadin.flow.component.applayout.DrawerToggle;
@@ -18,7 +18,7 @@ public class MainLayout extends AppLayout {
         var head = new HorizontalLayout();
         head.setDefaultVerticalComponentAlignment(FlexComponent.Alignment.CENTER);
         head.add(new DrawerToggle());
-        head.add(new H2("Enterprise AI patterns"){{addClassNames(LumoUtility.FontSize.LARGE);}});
+        head.add(new H2("Practical AI in Java"){{addClassNames(LumoUtility.FontSize.LARGE);}});
 
         addToNavbar(head);
 

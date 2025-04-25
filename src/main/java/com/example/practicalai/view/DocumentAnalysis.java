@@ -1,4 +1,4 @@
-package org.vaadin.marcus.practicalai.view;
+package com.example.practicalai.view;
 
 import com.vaadin.flow.component.html.Div;
 import com.vaadin.flow.component.html.H1;
@@ -18,7 +18,7 @@ import org.apache.tika.metadata.Metadata;
 import org.apache.tika.parser.AutoDetectParser;
 import org.apache.tika.sax.BodyContentHandler;
 import org.springframework.ai.chat.client.ChatClient;
-import org.vaadin.marcus.practicalai.view.components.Markdown;
+import com.example.practicalai.view.components.Markdown;
 
 import java.io.File;
 import java.io.InputStream;

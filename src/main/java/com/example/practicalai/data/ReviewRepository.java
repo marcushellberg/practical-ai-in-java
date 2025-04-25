@@ -1,4 +1,4 @@
-package org.vaadin.marcus.practicalai.data;
+package com.example.practicalai.data;
 
 import org.springframework.data.jpa.repository.JpaRepository;
 

@@ -1,4 +1,4 @@
-package org.vaadin.marcus.practicalai.view;
+package com.example.practicalai.view;
 
 import com.vaadin.flow.component.grid.Grid;
 import com.vaadin.flow.component.messages.MessageInput;
@@ -12,8 +12,8 @@ import org.springframework.ai.chat.client.ChatClient;
 import org.springframework.ai.chat.client.advisor.MessageChatMemoryAdvisor;
 import org.springframework.ai.chat.memory.ChatMemory;
 import org.vaadin.firitin.components.messagelist.MarkdownMessage;
-import org.vaadin.marcus.practicalai.data.Product;
-import org.vaadin.marcus.practicalai.service.ProductService;
+import com.example.practicalai.data.Product;
+import com.example.practicalai.service.ProductService;
 
 @Menu(title = "Tool Calling", order = 5)
 @Route("tool-calling")

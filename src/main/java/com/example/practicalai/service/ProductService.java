@@ -1,10 +1,10 @@
-package org.vaadin.marcus.practicalai.service;
+package com.example.practicalai.service;
 
 import org.springframework.ai.tool.annotation.Tool;
 import org.springframework.ai.tool.annotation.ToolParam;
 import org.springframework.stereotype.Service;
-import org.vaadin.marcus.practicalai.data.Product;
-import org.vaadin.marcus.practicalai.data.ProductRepository;
+import com.example.practicalai.data.Product;
+import com.example.practicalai.data.ProductRepository;
 
 import java.util.List;
 

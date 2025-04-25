@@ -1,4 +1,4 @@
-package org.vaadin.marcus.practicalai.view;
+package com.example.practicalai.view;
 
 import com.vaadin.flow.component.button.Button;
 import com.vaadin.flow.component.html.H1;
@@ -12,11 +12,11 @@ import com.vaadin.flow.router.Menu;
 import com.vaadin.flow.router.Route;
 import com.vaadin.flow.theme.lumo.LumoUtility;
 import org.springframework.ai.chat.client.ChatClient;
-import org.vaadin.marcus.practicalai.data.Review;
-import org.vaadin.marcus.practicalai.data.ReviewRepository;
-import org.vaadin.marcus.practicalai.data.Sentiment;
-import org.vaadin.marcus.practicalai.view.components.Badge;
-import org.vaadin.marcus.practicalai.view.components.Markdown;
+import com.example.practicalai.data.Review;
+import com.example.practicalai.data.ReviewRepository;
+import com.example.practicalai.data.Sentiment;
+import com.example.practicalai.view.components.Badge;
+import com.example.practicalai.view.components.Markdown;
 
 @Menu(title = "Sentiment Analysis", order = 3)
 @Route("sentiment-analysis")

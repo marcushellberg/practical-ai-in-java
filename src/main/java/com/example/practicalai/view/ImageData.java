@@ -1,4 +1,4 @@
-package org.vaadin.marcus.practicalai.view;
+package com.example.practicalai.view;
 
 import com.vaadin.flow.component.Text;
 import com.vaadin.flow.component.grid.Grid;
