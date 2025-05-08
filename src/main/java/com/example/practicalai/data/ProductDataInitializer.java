@@ -7,7 +7,7 @@ import org.springframework.context.annotation.Configuration;
 import java.math.BigDecimal;
 import java.util.Arrays;
 
-@Configuration
+@Configuration(proxyBeanMethods = false)
 public class ProductDataInitializer {
 
     @Bean
