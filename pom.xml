@@ -5,7 +5,7 @@
     <parent>
         <groupId>org.springframework.boot</groupId>
         <artifactId>spring-boot-starter-parent</artifactId>
-        <version>3.3.6</version>
+        <version>3.4.5</version>
         <relativePath/> <!-- lookup parent from repository -->
     </parent>
     <groupId>org.vaadin.marcus</groupId>
@@ -47,7 +47,6 @@
         <dependency>
             <groupId>org.springframework.ai</groupId>
             <artifactId>spring-ai-vector-store</artifactId>
-            <version>1.0.0-M8</version>
         </dependency>
         <dependency>
             <groupId>com.h2database</groupId>
@@ -65,7 +64,6 @@
         <dependency>
             <groupId>org.springframework.ai</groupId>
             <artifactId>spring-ai-rag</artifactId>
-            <version>1.0.0-M8</version>
         </dependency>
         <dependency>
             <groupId>in.virit</groupId>
