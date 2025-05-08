@@ -27,6 +27,7 @@
         <url/>
     </scm>
     <properties>
+        <arconia.version>0.10.3</arconia.version>
         <java.version>21</java.version>
         <spring-ai.version>1.0.0-M8</spring-ai.version>
         <vaadin.version>24.7.0</vaadin.version>
@@ -46,11 +47,12 @@
         </dependency>
         <dependency>
             <groupId>org.springframework.ai</groupId>
-            <artifactId>spring-ai-vector-store</artifactId>
+            <artifactId>spring-ai-starter-vector-store-pgvector</artifactId>
         </dependency>
         <dependency>
-            <groupId>com.h2database</groupId>
-            <artifactId>h2</artifactId>
+            <groupId>org.postgresql</groupId>
+            <artifactId>postgresql</artifactId>
+            <scope>runtime</scope>
         </dependency>
         <dependency>
             <groupId>org.springframework.boot</groupId>
@@ -70,6 +72,14 @@
             <artifactId>viritin</artifactId>
             <version>2.8.22</version>
         </dependency>
+
+        <dependency>
+            <groupId>io.arconia</groupId>
+            <artifactId>arconia-dev-services-postgresql</artifactId>
+            <scope>runtime</scope>
+            <optional>true</optional>
+        </dependency>
+
         <dependency>
             <groupId>org.springframework.boot</groupId>
             <artifactId>spring-boot-starter-test</artifactId>
@@ -78,6 +88,13 @@
     </dependencies>
     <dependencyManagement>
         <dependencies>
+            <dependency>
+                <groupId>io.arconia</groupId>
+                <artifactId>arconia-bom</artifactId>
+                <version>${arconia.version}</version>
+                <type>pom</type>
+                <scope>import</scope>
+            </dependency>
             <dependency>
                 <groupId>org.springframework.ai</groupId>
                 <artifactId>spring-ai-bom</artifactId>

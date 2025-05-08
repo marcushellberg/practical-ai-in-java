@@ -12,9 +12,11 @@
   - Chat memory for conversational context
 - Function Calling - Demonstrate AI function calling capabilities with product data
 
-## Requirements
+## Pre-Requisites
 
-The application expects you to have the following API key as an environment variable:
+* Java 21+
+* Container runtime (e.g. Podman or Docker) for running the PostgreSQL Dev Service
+* The application expects you to have the following API key as an environment variable:
 - `OPENAI_API_KEY`: OpenAI API key
 
 ## Running the examples
