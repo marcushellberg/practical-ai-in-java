@@ -56,6 +56,10 @@
         </dependency>
         <dependency>
             <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot-starter-actuator</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>org.springframework.boot</groupId>
             <artifactId>spring-boot-starter-data-jpa</artifactId>
         </dependency>
         <dependency>
@@ -72,7 +76,17 @@
             <artifactId>viritin</artifactId>
             <version>2.8.22</version>
         </dependency>
+        <dependency>
+            <groupId>io.arconia</groupId>
+            <artifactId>arconia-opentelemetry-spring-boot-starter</artifactId>
+        </dependency>
 
+        <dependency>
+            <groupId>io.arconia</groupId>
+            <artifactId>arconia-dev-services-opentelemetry-lgtm</artifactId>
+            <scope>runtime</scope>
+            <optional>true</optional>
+        </dependency>
         <dependency>
             <groupId>io.arconia</groupId>
             <artifactId>arconia-dev-services-postgresql</artifactId>
