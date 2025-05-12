@@ -1,0 +1,11 @@
+{
+  "mcpServers": {
+    "vaadin": {
+      "command": "npx",
+      "args": [
+        "-y",
+        "vaadin-docs-mcp-server@latest"
+      ]
+    }
+  }
+}
