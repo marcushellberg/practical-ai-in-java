@@ -31,7 +31,7 @@ public class Mcp extends VerticalLayout {
                 """)
 
             .defaultToolCallbacks(new SyncMcpToolCallbackProvider(mcpSyncClients))
-            .defaultAdvisors(new MessageChatMemoryAdvisor(MessageWindowChatMemory.builder().build()))
+            .defaultAdvisors(MessageChatMemoryAdvisor.builder(MessageWindowChatMemory.builder().build()).build())
             .build();
 
         var messages = new VerticalLayout();

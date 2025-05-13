@@ -23,7 +23,7 @@ public class ToolCalling extends HorizontalLayout {
         setSizeFull();
         var chatClient = builder
             .defaultTools(productService)
-            .defaultAdvisors(new MessageChatMemoryAdvisor(memory))
+            .defaultAdvisors(MessageChatMemoryAdvisor.builder(memory).build())
             .build();
 
         add(getGridLayout(productService), getChatLayout(chatClient));
