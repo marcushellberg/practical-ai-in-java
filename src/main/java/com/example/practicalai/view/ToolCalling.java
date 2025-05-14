@@ -29,7 +29,7 @@ public class ToolCalling extends HorizontalLayout {
         add(getGridLayout(productService), getChatLayout(chatClient));
     }
 
-    private static @NotNull VerticalLayout getGridLayout(ProductService productService) {
+    private VerticalLayout getGridLayout(ProductService productService) {
         var grid = new Grid<>(Product.class);
         grid.setItems(productService.findAll());
         grid.setColumns("id", "name", "description", "price");
@@ -46,7 +46,7 @@ public class ToolCalling extends HorizontalLayout {
         return layout;
     }
 
-    private static @NotNull VerticalLayout getChatLayout(ChatClient chatClient) {
+    private VerticalLayout getChatLayout(ChatClient chatClient) {
         var chatLayout = new VerticalLayout();
         chatLayout.setHeightFull();
         var messages = new VerticalLayout();
