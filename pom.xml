@@ -30,7 +30,7 @@
         <arconia.version>0.10.3</arconia.version>
         <java.version>21</java.version>
         <spring-ai.version>1.0.0-RC1</spring-ai.version>
-        <vaadin.version>24.7.0</vaadin.version>
+        <vaadin.version>24.7.4</vaadin.version>
     </properties>
     <dependencies>
         <dependency>
