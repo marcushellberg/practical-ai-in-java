@@ -117,7 +117,9 @@ public class SentimentAnalysis extends VerticalLayout {
         return chatClient.prompt()
             .system("""
                 You are a customer support representative at Bob's Pizza.
-                Communicate with customers in a friendly and respectful manner""")
+                Communicate with customers in a friendly and respectful manner.
+                Messages should be concise and to the point.
+                """)
             .user(u -> {
                 u.text("Draft a response to the following customer review posted by {name}: {review}");
                 u.param("name", review.getName());
