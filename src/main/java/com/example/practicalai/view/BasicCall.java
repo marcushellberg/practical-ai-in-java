@@ -6,6 +6,8 @@ import com.vaadin.flow.component.orderedlayout.VerticalLayout;
 import com.vaadin.flow.router.Menu;
 import com.vaadin.flow.router.Route;
 import org.springframework.ai.chat.client.ChatClient;
+import org.springframework.ai.chat.client.advisor.MessageChatMemoryAdvisor;
+import org.springframework.ai.chat.memory.ChatMemory;
 import org.vaadin.firitin.components.messagelist.MarkdownMessage;
 
 @Menu(title = "Basic Calling", order = 1)
@@ -30,11 +32,9 @@ public class BasicCall extends VerticalLayout {
                 response
             );
 
-            chatClient.prompt()
-                .user(event.getValue())
-                .stream()
-                .content()
-                .subscribe(response::appendMarkdownAsync);
+            var content = chatClient.prompt().user(message).call().content();
+            response.setMarkdown(content);
+
         });
 
         addAndExpand(new Scroller(messages));
