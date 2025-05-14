@@ -13,7 +13,6 @@ import com.vaadin.flow.router.Menu;
 import com.vaadin.flow.router.Route;
 import org.springframework.ai.chat.client.ChatClient;
 import org.springframework.ai.chat.client.advisor.MessageChatMemoryAdvisor;
-import org.springframework.ai.chat.client.advisor.PromptChatMemoryAdvisor;
 import org.springframework.ai.chat.memory.ChatMemory;
 import org.springframework.ai.rag.advisor.RetrievalAugmentationAdvisor;
 import org.springframework.ai.rag.generation.augmentation.ContextualQueryAugmenter;
@@ -42,7 +41,7 @@ public class RagChat extends VerticalLayout {
         this.vectorStore = vectorStore;
         chatClient = builder
             .defaultAdvisors(
-                new MessageChatMemoryAdvisor(chatMemory),
+                MessageChatMemoryAdvisor.builder(chatMemory).build(),
                 RetrievalAugmentationAdvisor.builder()
 
                     ////// 1. Pre-Retrieval
@@ -114,7 +113,7 @@ public class RagChat extends VerticalLayout {
 
             chatClient.prompt()
                 .user(prompt)
-                .advisors(a -> a.param(PromptChatMemoryAdvisor.CHAT_MEMORY_CONVERSATION_ID_KEY, chatId))
+                .advisors(a -> a.param(ChatMemory.CONVERSATION_ID, chatId))
                 .stream()
                 .content()
                 .subscribe(answer::appendMarkdownAsync);
