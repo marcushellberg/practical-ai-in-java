@@ -67,6 +67,8 @@ public class DocumentAnalysis extends VerticalLayout {
         var modeSelector = new RadioButtonGroup<String>();
         modeSelector.setItems("Summarize", "Identify action points");
         modeSelector.setValue("Summarize");
+        modeSelector.addValueChangeListener(e -> output.removeAll());
+
         add(header, modeSelector, output);
 
         upload.addSucceededListener(e -> {
