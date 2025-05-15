@@ -1,19 +1,22 @@
 package com.example.practicalai.view;
 
+import com.example.practicalai.data.Product;
+import com.example.practicalai.service.ProductService;
+import com.vaadin.flow.component.UI;
 import com.vaadin.flow.component.grid.Grid;
 import com.vaadin.flow.component.messages.MessageInput;
+import com.vaadin.flow.component.messages.MessageList;
+import com.vaadin.flow.component.messages.MessageListItem;
 import com.vaadin.flow.component.orderedlayout.HorizontalLayout;
 import com.vaadin.flow.component.orderedlayout.Scroller;
 import com.vaadin.flow.component.orderedlayout.VerticalLayout;
 import com.vaadin.flow.router.Menu;
 import com.vaadin.flow.router.Route;
-import org.jetbrains.annotations.NotNull;
 import org.springframework.ai.chat.client.ChatClient;
 import org.springframework.ai.chat.client.advisor.MessageChatMemoryAdvisor;
 import org.springframework.ai.chat.memory.ChatMemory;
-import org.vaadin.firitin.components.messagelist.MarkdownMessage;
-import com.example.practicalai.data.Product;
-import com.example.practicalai.service.ProductService;
+
+import java.time.Instant;
 
 @Menu(title = "Tool Calling", order = 5)
 @Route("tool-calling")
@@ -49,24 +52,24 @@ public class ToolCalling extends HorizontalLayout {
     private VerticalLayout getChatLayout(ChatClient chatClient) {
         var chatLayout = new VerticalLayout();
         chatLayout.setHeightFull();
-        var messages = new VerticalLayout();
+        var messages = new MessageList();
+        messages.setMarkdown(true);
         var input = new MessageInput();
         input.setWidthFull();
 
         input.addSubmitListener(event -> {
+            var ui = UI.getCurrent();
             var message = event.getValue();
-            var response = new MarkdownMessage("Bot");
+            var response = new MessageListItem("", Instant.now(), "Bot");
 
-            messages.add(
-                new MarkdownMessage(message, "You"),
-                response
-            );
+            messages.addItem(new MessageListItem(message, Instant.now(), "You"));
+            messages.addItem(response);
 
             chatClient.prompt()
                 .user(event.getValue())
                 .stream()
                 .content()
-                .subscribe(response::appendMarkdownAsync);
+                .subscribe(token -> ui.access(() -> response.appendText(token)));
         });
 
         chatLayout.addAndExpand(new Scroller(messages));

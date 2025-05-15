@@ -1,6 +1,9 @@
 package com.example.practicalai.view;
 
+import com.vaadin.flow.component.UI;
 import com.vaadin.flow.component.messages.MessageInput;
+import com.vaadin.flow.component.messages.MessageList;
+import com.vaadin.flow.component.messages.MessageListItem;
 import com.vaadin.flow.component.orderedlayout.Scroller;
 import com.vaadin.flow.component.orderedlayout.VerticalLayout;
 import com.vaadin.flow.router.Menu;
@@ -10,8 +13,8 @@ import org.springframework.ai.chat.client.ChatClient;
 import org.springframework.ai.chat.client.advisor.MessageChatMemoryAdvisor;
 import org.springframework.ai.chat.memory.MessageWindowChatMemory;
 import org.springframework.ai.mcp.SyncMcpToolCallbackProvider;
-import org.vaadin.firitin.components.messagelist.MarkdownMessage;
 
+import java.time.Instant;
 import java.util.List;
 
 @Menu(title = "MCP", order = 7)
@@ -34,24 +37,24 @@ public class Mcp extends VerticalLayout {
             .defaultAdvisors(MessageChatMemoryAdvisor.builder(MessageWindowChatMemory.builder().build()).build())
             .build();
 
-        var messages = new VerticalLayout();
+        var messages = new MessageList();
+        messages.setMarkdown(true);
         var input = new MessageInput();
         input.setWidthFull();
 
         input.addSubmitListener(event -> {
             var message = event.getValue();
-            var response = new MarkdownMessage("Bot");
+            messages.addItem(new MessageListItem(message, Instant.now(), "You"));
 
-            messages.add(
-                new MarkdownMessage(message, "You"),
-                response
-            );
+            var response = new MessageListItem("", Instant.now(), "Bot");
+            messages.addItem(response);
 
+            var ui = UI.getCurrent();
             chatClient.prompt()
                 .user(event.getValue())
                 .stream()
                 .content()
-                .subscribe(response::appendMarkdownAsync);
+                .subscribe(token -> ui.access(() -> response.appendText(token)));
         });
 
         addAndExpand(new Scroller(messages));

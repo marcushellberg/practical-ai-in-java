@@ -1,7 +1,10 @@
 package com.example.practicalai.view;
 
+import com.vaadin.flow.component.UI;
 import com.vaadin.flow.component.button.Button;
 import com.vaadin.flow.component.messages.MessageInput;
+import com.vaadin.flow.component.messages.MessageList;
+import com.vaadin.flow.component.messages.MessageListItem;
 import com.vaadin.flow.component.orderedlayout.HorizontalLayout;
 import com.vaadin.flow.component.orderedlayout.Scroller;
 import com.vaadin.flow.component.orderedlayout.VerticalLayout;
@@ -25,8 +28,8 @@ import org.springframework.ai.transformer.splitter.TokenTextSplitter;
 import org.springframework.ai.vectorstore.VectorStore;
 import org.springframework.core.io.InputStreamResource;
 import org.springframework.core.io.Resource;
-import org.vaadin.firitin.components.messagelist.MarkdownMessage;
 
+import java.time.Instant;
 import java.util.UUID;
 
 @Menu(title = "RAG Chat", order = 6)
@@ -89,7 +92,8 @@ public class RagChat extends VerticalLayout {
     }
 
     private void buildView() {
-        var messageList = new VerticalLayout();
+        var messageList = new MessageList();
+        messageList.setMarkdown(true);
         var messageInput = new MessageInput();
         var buffer = new MultiFileMemoryBuffer();
         var upload = new Upload(buffer);
@@ -108,15 +112,18 @@ public class RagChat extends VerticalLayout {
         messageInput.addSubmitListener(e -> {
             var prompt = e.getValue();
 
-            var answer = new MarkdownMessage("Assistant");
-            messageList.add(new MarkdownMessage(prompt, "You"), answer);
+            messageList.addItem(new MessageListItem(prompt, Instant.now(), "You"));
 
+            var answer = new MessageListItem("", Instant.now(), "Bot");
+            messageList.addItem(answer);
+
+            var ui = UI.getCurrent();
             chatClient.prompt()
                 .user(prompt)
                 .advisors(a -> a.param(ChatMemory.CONVERSATION_ID, chatId))
                 .stream()
                 .content()
-                .subscribe(answer::appendMarkdownAsync);
+                .subscribe(token -> ui.access(() -> answer.appendText(token)));
         });
 
         upload.addSucceededListener(e -> {

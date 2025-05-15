@@ -1,12 +1,15 @@
 package com.example.practicalai.view;
 
 import com.vaadin.flow.component.messages.MessageInput;
+import com.vaadin.flow.component.messages.MessageList;
+import com.vaadin.flow.component.messages.MessageListItem;
 import com.vaadin.flow.component.orderedlayout.Scroller;
 import com.vaadin.flow.component.orderedlayout.VerticalLayout;
 import com.vaadin.flow.router.Menu;
 import com.vaadin.flow.router.Route;
 import org.springframework.ai.chat.client.ChatClient;
-import org.vaadin.firitin.components.messagelist.MarkdownMessage;
+
+import java.time.Instant;
 
 @Menu(title = "Basic Calling", order = 1)
 @Route("")
@@ -17,22 +20,19 @@ public class BasicCall extends VerticalLayout {
 
         var chatClient = builder.build();
 
-        var messages = new VerticalLayout();
+        var messages = new MessageList();
+        messages.setMarkdown(true);
+
         var input = new MessageInput();
         input.setWidthFull();
 
         input.addSubmitListener(event -> {
             var message = event.getValue();
-            var response = new MarkdownMessage("Bot");
 
-            messages.add(
-                new MarkdownMessage(message, "You"),
-                response
-            );
+            messages.addItem(new MessageListItem(message, Instant.now(), "You"));
 
-            var content = chatClient.prompt().user(message).call().content();
-            response.setMarkdown(content);
-
+            var response = chatClient.prompt().user(message).call().content();
+            messages.addItem(new MessageListItem(response, Instant.now(), "AI"));
         });
 
         addAndExpand(new Scroller(messages));
