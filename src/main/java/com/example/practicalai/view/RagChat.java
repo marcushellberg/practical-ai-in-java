@@ -36,7 +36,7 @@ import java.util.UUID;
 @Route("rag-chat")
 public class RagChat extends VerticalLayout {
 
-    private ChatClient chatClient;
+    private final ChatClient chatClient;
     private final VectorStore vectorStore;
     private final String chatId = UUID.randomUUID().toString();
 
@@ -54,14 +54,14 @@ public class RagChat extends VerticalLayout {
                         // Original: What are the benefits?
                         // Rewritten: What are the benefits of exercising?
                         CompressionQueryTransformer.builder()
-                            .chatClientBuilder(builder.build().mutate())
+                            .chatClientBuilder(builder.clone())
                             .build(),
 
                         // Rewrite the query to optimize for vector search. Example:
                         // Original: I've considered starting to run or maybe lift weights, are there benefits to that?
                         // Rewritten: What are the benefits of exercising?
                         RewriteQueryTransformer.builder()
-                            .chatClientBuilder(builder.build().mutate())
+                            .chatClientBuilder(builder.clone())
                             .build()
                     )
 
@@ -72,7 +72,7 @@ public class RagChat extends VerticalLayout {
                     // - What are the benefits of cardio?
                     // - What are the benefits of strength training?
                     .queryExpander(MultiQueryExpander.builder()
-                        .chatClientBuilder(builder.build().mutate())
+                        .chatClientBuilder(builder.clone())
                         .build())
 
                     ////// 2. Retrieval
