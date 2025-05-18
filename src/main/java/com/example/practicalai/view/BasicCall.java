@@ -1,5 +1,6 @@
 package com.example.practicalai.view;
 
+import com.example.practicalai.ai.guardrails.SensitiveDataInputGuardrailAdvisor;
 import com.vaadin.flow.component.messages.MessageInput;
 import com.vaadin.flow.component.messages.MessageList;
 import com.vaadin.flow.component.messages.MessageListItem;
@@ -18,7 +19,11 @@ public class BasicCall extends VerticalLayout {
     public BasicCall(ChatClient.Builder builder) {
         setSizeFull();
 
-        var chatClient = builder.build();
+        var chatClient = builder
+                .defaultAdvisors(SensitiveDataInputGuardrailAdvisor.builder()
+                        .chatClientBuilder(builder.clone())
+                        .build())
+                .build();
 
         var messages = new MessageList();
         messages.setMarkdown(true);

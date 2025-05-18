@@ -1,5 +1,7 @@
 package com.example.practicalai.view;
 
+import com.example.practicalai.ai.guardrails.JsonOutputGuardrailAdvisor;
+import com.example.practicalai.ai.guardrails.SensitiveDataInputGuardrailAdvisor;
 import com.vaadin.flow.component.Text;
 import com.vaadin.flow.component.grid.Grid;
 import com.vaadin.flow.component.html.Div;
@@ -32,7 +34,12 @@ public class ImageData extends VerticalLayout {
     private List<Participant> participants = new ArrayList<>();
 
     public ImageData(ChatClient.Builder builder) {
-        var client = builder.build();
+        var client = builder
+                .defaultAdvisors(JsonOutputGuardrailAdvisor.builder()
+                        .chatClientBuilder(builder.clone())
+                        .type(SignUpSheet.class)
+                        .build())
+                .build();
 
         // Set up upload
         var buffer = new MemoryBuffer();
