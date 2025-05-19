@@ -1,5 +1,6 @@
 package com.example.practicalai;
 
+import com.vaadin.flow.component.UI;
 import com.vaadin.flow.component.applayout.AppLayout;
 import com.vaadin.flow.component.applayout.DrawerToggle;
 import com.vaadin.flow.component.html.H2;
@@ -11,10 +12,14 @@ import com.vaadin.flow.router.RouterLink;
 import com.vaadin.flow.server.menu.MenuConfiguration;
 import com.vaadin.flow.theme.lumo.LumoUtility;
 
+import java.util.Locale;
+
 @Layout
 public class MainLayout extends AppLayout {
 
     public MainLayout() {
+        UI.getCurrent().setLocale(Locale.ENGLISH);
+
         var head = new HorizontalLayout();
         head.setDefaultVerticalComponentAlignment(FlexComponent.Alignment.CENTER);
         head.add(new DrawerToggle());
