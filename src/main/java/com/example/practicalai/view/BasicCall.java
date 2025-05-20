@@ -15,23 +15,33 @@ import java.time.Instant;
 @Route("")
 public class BasicCall extends VerticalLayout {
 
+    private final ChatClient chatClient;
+
     public BasicCall(ChatClient.Builder builder) {
         setSizeFull();
 
-        var chatClient = builder.build();
+        chatClient = builder.build();
 
+        buildView();
+    }
+
+    private void buildView() {
         var messages = new MessageList();
-        messages.setMarkdown(true);
-
         var input = new MessageInput();
+
+        messages.setMarkdown(true);
         input.setWidthFull();
 
         input.addSubmitListener(event -> {
-            var message = event.getValue();
+            var userMessage = event.getValue();
 
-            messages.addItem(new MessageListItem(message, Instant.now(), "You"));
+            messages.addItem(new MessageListItem(userMessage, Instant.now(), "You"));
 
-            var response = chatClient.prompt().user(message).call().content();
+            var response = chatClient.prompt()
+                .user(userMessage)
+                .call()
+                .content();
+
             messages.addItem(new MessageListItem(response, Instant.now(), "AI"));
         });
 
