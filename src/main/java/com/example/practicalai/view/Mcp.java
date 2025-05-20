@@ -17,7 +17,7 @@ import org.springframework.ai.mcp.SyncMcpToolCallbackProvider;
 import java.time.Instant;
 import java.util.List;
 
-@Menu(title = "MCP", order = 7)
+@Menu(title = "MCP", order = 8)
 @Route("mcp")
 public class Mcp extends VerticalLayout {
 
