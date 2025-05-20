@@ -26,66 +26,25 @@ public class SentimentAnalysis extends VerticalLayout {
     private final VerticalLayout reviews = new VerticalLayout();
     private final ChatClient chatClient;
 
-    class ReviewCard extends VerticalLayout {
-
-        public ReviewCard(Review review) {
-            addClassNames(
-                LumoUtility.BoxShadow.SMALL,
-                LumoUtility.Padding.MEDIUM,
-                LumoUtility.BorderRadius.SMALL,
-                LumoUtility.Margin.Bottom.XLARGE
-            );
-            setMaxWidth("500px");
-
-            var name = new H3(review.getName()) {{
-                addClassName(LumoUtility.FontSize.LARGE);
-            }};
-            var sentiment = new Badge(review.getSentiment());
-            var reviewText = new Paragraph(review.getReview());
-            var respondButton = new Button("Respond");
-
-            respondButton.addClickListener(e -> {
-                remove(respondButton);
-                var responseField = new TextArea();
-                responseField.setWidthFull();
-                responseField.setValue(draftResponse(review));
-
-                var sendButton = new Button("Send", ev -> {
-                    review.setResponse(responseField.getValue());
-                    repository.save(review);
-                    updateReviews();
-                });
-
-                add(responseField, sendButton);
-            });
-
-            add(
-                new HorizontalLayout(name, sentiment),
-                reviewText,
-                review.getResponse()== null || review.getResponse().isBlank() ?
-                    respondButton :
-                    new Markdown(review.getResponse()) {{
-                        addClassNames(LumoUtility.Background.CONTRAST_5, LumoUtility.Padding.MEDIUM);
-                    }}
-            );
-        }
-    }
-
     public SentimentAnalysis(ReviewRepository repository, ChatClient.Builder builder) {
         this.repository = repository;
         chatClient = builder.build();
 
-        var analyzeButton = new Button("Analyze Reviews", e -> analyzeReviews());
+        buildView();
 
+        updateReviews();
+    }
+
+    private void buildView() {
         add(
             new H1("Bob's pizza"),
-            new HorizontalLayout(new H2("Customer reviews"), analyzeButton) {{
+            new HorizontalLayout(
+                new H2("Customer reviews"),
+                new Button("Analyze Reviews", e -> analyzeReviews())) {{
                 setAlignItems(Alignment.CENTER);
             }},
             reviews
         );
-
-        updateReviews();
     }
 
     private void analyzeReviews() {
@@ -94,7 +53,8 @@ public class SentimentAnalysis extends VerticalLayout {
     }
 
     private void analyzeReview(Review review) {
-        record SentimentResponse(Sentiment sentiment) {}
+        record SentimentResponse(Sentiment sentiment) {
+        }
 
         var sentimentResponse = chatClient.prompt()
             .user(u -> {
@@ -132,5 +92,50 @@ public class SentimentAnalysis extends VerticalLayout {
     private void updateReviews() {
         reviews.removeAll();
         repository.findAll().forEach(review -> reviews.add(new ReviewCard(review)));
+    }
+
+    class ReviewCard extends VerticalLayout {
+
+        public ReviewCard(Review review) {
+            addClassNames(
+                LumoUtility.BoxShadow.SMALL,
+                LumoUtility.Padding.MEDIUM,
+                LumoUtility.BorderRadius.SMALL,
+                LumoUtility.Margin.Bottom.XLARGE
+            );
+            setMaxWidth("500px");
+
+            var name = new H3(review.getName()) {{
+                addClassName(LumoUtility.FontSize.LARGE);
+            }};
+            var sentiment = new Badge(review.getSentiment());
+            var reviewText = new Paragraph(review.getReview());
+            var respondButton = new Button("Respond");
+
+            respondButton.addClickListener(e -> {
+                remove(respondButton);
+                var responseField = new TextArea();
+                responseField.setWidthFull();
+                responseField.setValue(draftResponse(review));
+
+                var sendButton = new Button("Send", ev -> {
+                    review.setResponse(responseField.getValue());
+                    repository.save(review);
+                    updateReviews();
+                });
+
+                add(responseField, sendButton);
+            });
+
+            add(
+                new HorizontalLayout(name, sentiment),
+                reviewText,
+                review.getResponse() == null || review.getResponse().isBlank() ?
+                    respondButton :
+                    new Markdown(review.getResponse()) {{
+                        addClassNames(LumoUtility.Background.CONTRAST_5, LumoUtility.Padding.MEDIUM);
+                    }}
+            );
+        }
     }
 }
