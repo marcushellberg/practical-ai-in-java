@@ -1,5 +1,6 @@
 package com.example.practicalai.view;
 
+import com.vaadin.flow.component.UI;
 import com.vaadin.flow.component.html.Div;
 import com.vaadin.flow.component.html.H1;
 import com.vaadin.flow.component.html.H2;
@@ -48,10 +49,11 @@ public class DocumentAnalysis extends VerticalLayout {
 
     public DocumentAnalysis(ChatClient.Builder builder) {
         chatClient = builder.build();
-        createUI();
+
+        buildView();
     }
 
-    private void createUI() {
+    private void buildView() {
         var fb = new FileBuffer();
         var upload = new Upload();
         upload.setReceiver(fb);
@@ -75,6 +77,7 @@ public class DocumentAnalysis extends VerticalLayout {
             var tmpFile = fb.getFileData().getFile();
             parseFile(tmpFile, modeSelector.getValue());
             tmpFile.delete();
+            upload.clearFileList();
         });
     }
 
@@ -95,13 +98,20 @@ public class DocumentAnalysis extends VerticalLayout {
     }
 
     private void analyzeFile(String content, String mode) {
-        var markdown = chatClient.prompt()
+        output.removeAll();
+        var response = new Markdown("");
+        output.add(response);
+
+
+        var ui = UI.getCurrent();
+        chatClient.prompt()
             .system(mode.equals("Summarize") ? SUMMARIZATION_SYSTEM_MESSAGE : ACTION_POINTS_SYSTEM_MESSAGE)
             .user("Text to summarize: " + content)
-            .call()
-            .content();
+            .stream()
+            .content()
+            .subscribe(token -> {
+                ui.access(() -> response.appendContent(token));
+            });
 
-        output.removeAll();
-        output.add(new Markdown(markdown));
     }
 }
