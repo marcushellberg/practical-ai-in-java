@@ -5,6 +5,7 @@ import com.vaadin.flow.component.html.H1;
 import com.vaadin.flow.component.html.H2;
 import com.vaadin.flow.component.html.H3;
 import com.vaadin.flow.component.html.Paragraph;
+import com.vaadin.flow.component.markdown.Markdown;
 import com.vaadin.flow.component.orderedlayout.HorizontalLayout;
 import com.vaadin.flow.component.orderedlayout.VerticalLayout;
 import com.vaadin.flow.component.textfield.TextArea;
@@ -16,7 +17,6 @@ import com.example.practicalai.data.Review;
 import com.example.practicalai.data.ReviewRepository;
 import com.example.practicalai.data.Sentiment;
 import com.example.practicalai.view.components.Badge;
-import com.example.practicalai.view.components.Markdown;
 
 @Menu(title = "Sentiment Analysis", order = 3)
 @Route("sentiment-analysis")
