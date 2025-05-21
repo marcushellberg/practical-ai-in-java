@@ -22,20 +22,29 @@ import java.time.Instant;
 @Route("tool-calling")
 public class ToolCalling extends HorizontalLayout {
 
+    private final ChatClient chatClient;
+    private Grid<Product> grid;
+    private ProductService productService;
+
     public ToolCalling(ChatClient.Builder builder, ProductService productService, ChatMemory memory) {
+        this.productService = productService;
         setSizeFull();
-        var chatClient = builder
+        setSpacing(false);
+
+        chatClient = builder
             .defaultTools(productService)
             .defaultAdvisors(MessageChatMemoryAdvisor.builder(memory).build())
             .build();
 
-        add(getGridLayout(productService), getChatLayout(chatClient));
+        add(getGridLayout(), getChatLayout());
+
+        updateItems();
     }
 
-    private VerticalLayout getGridLayout(ProductService productService) {
-        var grid = new Grid<>(Product.class);
-        grid.setItems(productService.findAll());
+    private VerticalLayout getGridLayout() {
+        grid = new Grid<>(Product.class);
         grid.setColumns("id", "name", "description", "price");
+
         grid.getColumns().forEach(c -> {
             c.setResizable(true);
             if(!c.getKey().equals("description")) {
@@ -49,12 +58,17 @@ public class ToolCalling extends HorizontalLayout {
         return layout;
     }
 
-    private VerticalLayout getChatLayout(ChatClient chatClient) {
+    private void updateItems() {
+        grid.setItems(productService.findAll());
+    }
+
+    private VerticalLayout getChatLayout() {
         var chatLayout = new VerticalLayout();
         chatLayout.setHeightFull();
         var messages = new MessageList();
         messages.setMarkdown(true);
         var input = new MessageInput();
+        input.getStyle().setPadding("0px");
         input.setWidthFull();
 
         input.addSubmitListener(event -> {
@@ -69,7 +83,9 @@ public class ToolCalling extends HorizontalLayout {
                 .user(event.getValue())
                 .stream()
                 .content()
-                .subscribe(token -> ui.access(() -> response.appendText(token)));
+                .doOnComplete(() -> ui.access(this::updateItems))
+                .subscribe(token -> ui.access(() -> response.appendText(token)))
+            ;
         });
 
         chatLayout.addAndExpand(new Scroller(messages));
