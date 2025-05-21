@@ -18,7 +18,7 @@ import org.springframework.ai.chat.memory.ChatMemory;
 
 import java.time.Instant;
 
-@Menu(title = "Tool Calling", order = 5)
+@Menu(title = "Tool Calling", order = 7)
 @Route("tool-calling")
 public class ToolCalling extends HorizontalLayout {
 
@@ -74,7 +74,7 @@ public class ToolCalling extends HorizontalLayout {
         input.addSubmitListener(event -> {
             var ui = UI.getCurrent();
             var message = event.getValue();
-            var response = new MessageListItem("", Instant.now(), "Bot");
+            var response = new MessageListItem("", Instant.now(), "AI");
 
             messages.addItem(new MessageListItem(message, Instant.now(), "You"));
             messages.addItem(response);

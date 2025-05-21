@@ -13,7 +13,7 @@ import org.springframework.ai.chat.prompt.ChatOptions;
 
 import java.time.Instant;
 
-@Menu(title = "Guardrails", order = 9)
+@Menu(title = "Guardrails", order = 2)
 @Route("/guardrails")
 public class Guardrails extends VerticalLayout {
 

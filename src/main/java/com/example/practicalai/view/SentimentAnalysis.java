@@ -18,7 +18,7 @@ import com.example.practicalai.data.ReviewRepository;
 import com.example.practicalai.data.Sentiment;
 import com.example.practicalai.view.components.Badge;
 
-@Menu(title = "Sentiment Analysis", order = 3)
+@Menu(title = "Sentiment Analysis", order = 4)
 @Route("sentiment-analysis")
 public class SentimentAnalysis extends VerticalLayout {
 

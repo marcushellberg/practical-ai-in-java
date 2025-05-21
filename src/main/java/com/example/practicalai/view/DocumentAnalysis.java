@@ -24,7 +24,7 @@ import org.springframework.ai.chat.client.ChatClient;
 import java.io.File;
 import java.io.InputStream;
 
-@Menu(title = "Document Analysis", order = 2)
+@Menu(title = "Document Analysis", order = 3)
 @Route("document-analysis")
 public class DocumentAnalysis extends VerticalLayout {
 

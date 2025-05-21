@@ -32,7 +32,7 @@ import org.springframework.core.io.Resource;
 import java.time.Instant;
 import java.util.UUID;
 
-@Menu(title = "RAG Chat", order = 7)
+//@Menu(title = "RAG Chat", order = 7)
 @Route("rag-chat")
 public class RagChat extends VerticalLayout {
 

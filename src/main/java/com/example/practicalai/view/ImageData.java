@@ -19,7 +19,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 @PageTitle("Image data")
-@Menu(title = "Image data", order = 4)
+@Menu(title = "Image data", order = 6)
 @Route("image-data")
 public class ImageData extends VerticalLayout {
 

@@ -27,7 +27,7 @@ import org.springframework.core.io.Resource;
 
 import java.time.Instant;
 
-@Menu(title = "Simple RAG", order = 6)
+@Menu(title = "Simple RAG", order = 5)
 @Route("simple-rag")
 public class SimpleRag extends VerticalLayout {
 
@@ -70,7 +70,7 @@ public class SimpleRag extends VerticalLayout {
 
             messageList.addItem(new MessageListItem(prompt, Instant.now(), "You"));
 
-            var answer = new MessageListItem("", Instant.now(), "Bot");
+            var answer = new MessageListItem("", Instant.now(), "AI");
             messageList.addItem(answer);
 
             var ui = UI.getCurrent();
