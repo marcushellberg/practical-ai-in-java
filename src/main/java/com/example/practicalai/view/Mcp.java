@@ -1,5 +1,7 @@
 package com.example.practicalai.view;
 
+import com.vaadin.flow.component.button.Button;
+import com.vaadin.flow.component.button.ButtonVariant;
 import com.vaadin.flow.component.html.H2;
 import com.vaadin.flow.component.html.Paragraph;
 import com.vaadin.flow.component.markdown.Markdown;
@@ -57,10 +59,7 @@ public class Mcp extends VerticalLayout {
                 .call()
                 .content();
 
-            var notification = new Notification(new Markdown(response));
-            notification.setDuration(15000);
-            notification.setPosition(Notification.Position.MIDDLE);
-            notification.open();
+            showNotification(response);
 
             upload.clearFileList();
         });
@@ -70,5 +69,19 @@ public class Mcp extends VerticalLayout {
             new Paragraph("Upload an image and let the AI create a theme for you."),
             upload
         );
+    }
+
+    private void showNotification(String response) {
+        var notification = new Notification();
+        var notificationLayout = new VerticalLayout(
+            new Markdown(response),
+            new Button("Yay!", e -> notification.close()) {{
+                addThemeVariants(ButtonVariant.LUMO_PRIMARY);
+            }}
+        );
+        notification.add(notificationLayout);
+        notification.setDuration(0);
+        notification.setPosition(Notification.Position.MIDDLE);
+        notification.open();
     }
 }
