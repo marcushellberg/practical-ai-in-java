@@ -1,63 +1,74 @@
 package com.example.practicalai.view;
 
-import com.vaadin.flow.component.UI;
-import com.vaadin.flow.component.messages.MessageInput;
-import com.vaadin.flow.component.messages.MessageList;
-import com.vaadin.flow.component.messages.MessageListItem;
-import com.vaadin.flow.component.orderedlayout.Scroller;
+import com.vaadin.flow.component.html.H2;
+import com.vaadin.flow.component.html.Paragraph;
+import com.vaadin.flow.component.markdown.Markdown;
+import com.vaadin.flow.component.notification.Notification;
 import com.vaadin.flow.component.orderedlayout.VerticalLayout;
+import com.vaadin.flow.component.upload.Upload;
+import com.vaadin.flow.component.upload.receivers.MemoryBuffer;
 import com.vaadin.flow.router.Menu;
 import com.vaadin.flow.router.Route;
 import io.modelcontextprotocol.client.McpSyncClient;
 import org.springframework.ai.chat.client.ChatClient;
-import org.springframework.ai.chat.client.advisor.MessageChatMemoryAdvisor;
-import org.springframework.ai.chat.memory.MessageWindowChatMemory;
 import org.springframework.ai.mcp.SyncMcpToolCallbackProvider;
+import org.springframework.beans.factory.annotation.Value;
+import org.springframework.core.io.InputStreamResource;
+import org.springframework.core.io.Resource;
+import org.springframework.util.MimeTypeUtils;
 
-import java.time.Instant;
 import java.util.List;
 
 @Menu(title = "MCP", order = 8)
 @Route("mcp")
 public class Mcp extends VerticalLayout {
 
-    // The MCP servers are defined in mcp-servers-config.json, and configured in application.properties
-    // Spring AI configures the clients for them
-    public Mcp(ChatClient.Builder builder, List<McpSyncClient> mcpSyncClients) {
+    public Mcp(
+        ChatClient.Builder builder,
+        McpSyncClient mcpSyncClient,
+        @Value("classpath:lumo-system-prompt.md") Resource systemPrompt
+    ) {
         setSizeFull();
 
         var chatClient = builder
-            .defaultSystem("""
-                You are a Vaadin expert.
-                Answer the user's questions in a helpful manner using the provided tools as your source.
-                If the tools don't provide the answer, say "I don't know."
-                """)
-
-            .defaultToolCallbacks(new SyncMcpToolCallbackProvider(mcpSyncClients))
-            .defaultAdvisors(MessageChatMemoryAdvisor.builder(MessageWindowChatMemory.builder().build()).build())
+            .defaultSystem(systemPrompt)
+            .defaultToolCallbacks(new SyncMcpToolCallbackProvider(List.of(mcpSyncClient)))
             .build();
 
-        var messages = new MessageList();
-        messages.setMarkdown(true);
-        var input = new MessageInput();
-        input.setWidthFull();
+        // Set up upload
+        var buffer = new MemoryBuffer();
+        var upload = new Upload(buffer);
+        upload.setAcceptedFileTypes("image/*");
+        upload.setMaxFileSize(10 * 1024 * 1024);
 
-        input.addSubmitListener(event -> {
-            var message = event.getValue();
-            messages.addItem(new MessageListItem(message, Instant.now(), "You"));
+        upload.addSucceededListener(e -> {
+            var response = chatClient.prompt()
+                .user(userMessage -> userMessage
+                    .text("""
+                        Analyze the attached imageand use it to create a Lumo theme for the Vaadin application.
+                        Use the provided tools for updating the CSS.
+                        When done, praise the user for their excellent design taste and skills.
+                        """)
+                    .media(
+                        MimeTypeUtils.parseMimeType(e.getMIMEType()),
+                        new InputStreamResource(buffer.getInputStream())
+                    )
+                )
+                .call()
+                .content();
 
-            var response = new MessageListItem("", Instant.now(), "Bot");
-            messages.addItem(response);
+            var notification = new Notification(new Markdown(response));
+            notification.setDuration(15000);
+            notification.setPosition(Notification.Position.MIDDLE);
+            notification.open();
 
-            var ui = UI.getCurrent();
-            chatClient.prompt()
-                .user(event.getValue())
-                .stream()
-                .content()
-                .subscribe(token -> ui.access(() -> response.appendText(token)));
+            upload.clearFileList();
         });
 
-        addAndExpand(new Scroller(messages));
-        add(input);
+        add(
+            new H2("Ain't nobody got time for CSS! 🎨"),
+            new Paragraph("Upload an image and let the AI create a theme for you."),
+            upload
+        );
     }
 }
