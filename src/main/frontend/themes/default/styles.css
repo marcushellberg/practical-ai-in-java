@@ -1,3 +1,7 @@
+a[highlight] {
+  text-decoration: underline;
+}
+
 vaadin-app-layout::part(navbar) {
     background-color: var(--lumo-primary-color-10pct);
 }
