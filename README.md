@@ -31,16 +31,15 @@ Under the hood, the Arconia framework will automatically spin up a PostgreSQL da
 
 ## Observability
 
-The application logs will show you the URL where you can access the Grafana observability platform and information about logs, metrics, and traces being exported to the platform.
+The application logs will show you the URL where you can access the Grafana observability platform.
 
 ```logs
-...o.t.grafana.LgtmStackContainer           : Access to the Grafana dashboard: http://localhost:38125
+...o.t.grafana.LgtmStackContainer: Access to the Grafana dashboard: http://localhost:38125
 ```
 
 By default, logs, metrics, and traces are exported via OTLP using the HTTP/Protobuf format.
 
-In Grafana, you can query the traces from the "Explore" page, selecting the "Tempo" data source.
-You can also explore metrics in "Explore > Metrics" and logs in "Explore > Logs".
+In Grafana, you can query the telemetry from the "Drilldown" and "Explore" sections.
 
 ## Using local models
 
