@@ -10,9 +10,9 @@ import com.vaadin.flow.component.orderedlayout.HorizontalLayout;
 import com.vaadin.flow.component.orderedlayout.VerticalLayout;
 import com.vaadin.flow.component.radiobutton.RadioButtonGroup;
 import com.vaadin.flow.component.upload.Upload;
-import com.vaadin.flow.component.upload.receivers.FileBuffer;
 import com.vaadin.flow.router.Menu;
 import com.vaadin.flow.router.Route;
+import com.vaadin.flow.server.streams.UploadHandler;
 import com.vaadin.flow.theme.lumo.LumoUtility;
 import org.apache.tika.exception.WriteLimitReachedException;
 import org.apache.tika.io.TikaInputStream;
@@ -54,10 +54,15 @@ public class DocumentAnalysis extends VerticalLayout {
     }
 
     private void buildView() {
-        var fb = new FileBuffer();
-        var upload = new Upload();
-        upload.setReceiver(fb);
+        var modeSelector = new RadioButtonGroup<String>();
+        modeSelector.setItems("Summarize", "Identify action points");
+        modeSelector.setValue("Summarize");
+        modeSelector.addValueChangeListener(e -> output.removeAll());
 
+        var upload = new Upload(UploadHandler.toTempFile((metadata, file) -> {
+            parseFile(file, modeSelector.getValue());
+            file.delete();
+        }));
 
         var heading = new H1("Document Analysis Bot");
         heading.addClassName(LumoUtility.FontSize.XLARGE);
@@ -66,19 +71,7 @@ public class DocumentAnalysis extends VerticalLayout {
         header.setAlignItems(Alignment.BASELINE);
         header.addClassName(LumoUtility.FlexWrap.WRAP);
 
-        var modeSelector = new RadioButtonGroup<String>();
-        modeSelector.setItems("Summarize", "Identify action points");
-        modeSelector.setValue("Summarize");
-        modeSelector.addValueChangeListener(e -> output.removeAll());
-
         add(header, modeSelector, output);
-
-        upload.addSucceededListener(e -> {
-            var tmpFile = fb.getFileData().getFile();
-            parseFile(tmpFile, modeSelector.getValue());
-            tmpFile.delete();
-            upload.clearFileList();
-        });
     }
 
     private void parseFile(File tmpFile, String mode) {

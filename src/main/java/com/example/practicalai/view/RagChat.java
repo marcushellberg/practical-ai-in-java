@@ -11,9 +11,8 @@ import com.vaadin.flow.component.orderedlayout.VerticalLayout;
 import com.vaadin.flow.component.popover.Popover;
 import com.vaadin.flow.component.popover.PopoverPosition;
 import com.vaadin.flow.component.upload.Upload;
-import com.vaadin.flow.component.upload.receivers.MultiFileMemoryBuffer;
-import com.vaadin.flow.router.Menu;
 import com.vaadin.flow.router.Route;
+import com.vaadin.flow.server.streams.UploadHandler;
 import org.springframework.ai.chat.client.ChatClient;
 import org.springframework.ai.chat.client.advisor.MessageChatMemoryAdvisor;
 import org.springframework.ai.chat.memory.ChatMemory;
@@ -26,7 +25,7 @@ import org.springframework.ai.rag.retrieval.search.VectorStoreDocumentRetriever;
 import org.springframework.ai.reader.tika.TikaDocumentReader;
 import org.springframework.ai.transformer.splitter.TokenTextSplitter;
 import org.springframework.ai.vectorstore.VectorStore;
-import org.springframework.core.io.InputStreamResource;
+import org.springframework.core.io.ByteArrayResource;
 import org.springframework.core.io.Resource;
 
 import java.time.Instant;
@@ -95,8 +94,9 @@ public class RagChat extends VerticalLayout {
         var messageList = new MessageList();
         messageList.setMarkdown(true);
         var messageInput = new MessageInput();
-        var buffer = new MultiFileMemoryBuffer();
-        var upload = new Upload(buffer);
+        var upload = new Upload(UploadHandler.inMemory((metadata, data) -> {
+            processDocument(new ByteArrayResource(data));
+        }));
         var popover = new Popover();
         var contextButton = new Button("Add Context");
         var inputLayout = new HorizontalLayout();
@@ -124,11 +124,6 @@ public class RagChat extends VerticalLayout {
                 .stream()
                 .content()
                 .subscribe(token -> ui.access(() -> answer.appendText(token)));
-        });
-
-        upload.addSucceededListener(e -> {
-            processDocument(new InputStreamResource(buffer.getInputStream(e.getFileName())));
-            upload.clearFileList();
         });
 
         var scroller = new Scroller(messageList);

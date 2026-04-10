@@ -1,18 +1,17 @@
 package com.example.practicalai.view;
 
 import com.example.practicalai.ai.guardrails.JsonOutputGuardrailAdvisor;
-import com.example.practicalai.ai.guardrails.SensitiveDataInputGuardrailAdvisor;
 import com.vaadin.flow.component.Text;
 import com.vaadin.flow.component.grid.Grid;
 import com.vaadin.flow.component.html.Div;
 import com.vaadin.flow.component.orderedlayout.VerticalLayout;
 import com.vaadin.flow.component.upload.Upload;
-import com.vaadin.flow.component.upload.receivers.MemoryBuffer;
 import com.vaadin.flow.router.Menu;
 import com.vaadin.flow.router.PageTitle;
 import com.vaadin.flow.router.Route;
+import com.vaadin.flow.server.streams.UploadHandler;
 import org.springframework.ai.chat.client.ChatClient;
-import org.springframework.core.io.InputStreamResource;
+import org.springframework.core.io.ByteArrayResource;
 import org.springframework.util.MimeTypeUtils;
 
 import java.util.ArrayList;
@@ -42,28 +41,25 @@ public class ImageData extends VerticalLayout {
                 .build();
 
         // Set up upload
-        var buffer = new MemoryBuffer();
-        var upload = new Upload(buffer);
-        upload.setAcceptedFileTypes("image/*");
-        upload.setMaxFileSize(10 * 1024 * 1024);
-
-        upload.addSucceededListener(e -> {
+        var handler = UploadHandler.inMemory((metadata, data) -> {
             var signUpSheet = client.prompt()
                 .user(userMessage -> userMessage
                     .text("""
                         Please read the attached event signup sheet image and extract all participants.
                         """)
                     .media(
-                        MimeTypeUtils.parseMimeType(e.getMIMEType()),
-                        new InputStreamResource(buffer.getInputStream())
+                        MimeTypeUtils.parseMimeType(metadata.contentType()),
+                        new ByteArrayResource(data)
                     )
                 )
                 .call()
                 .entity(SignUpSheet.class);
 
             showParticipants(signUpSheet);
-            upload.clearFileList();
         });
+        var upload = new Upload(handler);
+        upload.setAcceptedFileTypes("image/*");
+        upload.setMaxFileSize(10 * 1024 * 1024);
 
         Text instructions = new Text("Upload an image of an event signup sheet. The AI will extract participant data and display it here.");
         add(instructions, upload, createGridLayout());

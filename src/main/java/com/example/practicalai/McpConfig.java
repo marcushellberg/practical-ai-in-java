@@ -4,8 +4,10 @@ import io.modelcontextprotocol.client.McpClient;
 import io.modelcontextprotocol.client.McpSyncClient;
 import io.modelcontextprotocol.client.transport.ServerParameters;
 import io.modelcontextprotocol.client.transport.StdioClientTransport;
+import io.modelcontextprotocol.json.jackson3.JacksonMcpJsonMapper;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import tools.jackson.databind.json.JsonMapper;
 
 import java.nio.file.Paths;
 import java.time.Duration;
@@ -22,7 +24,7 @@ public class McpConfig {
             .args("-y", "@modelcontextprotocol/server-filesystem", getFrontendPath())
             .build();
 
-        var mcpClient = McpClient.sync(new StdioClientTransport(stdioParams))
+        var mcpClient = McpClient.sync(new StdioClientTransport(stdioParams, new JacksonMcpJsonMapper(JsonMapper.builder().build())))
             .requestTimeout(Duration.ofSeconds(10)).build();
 
         var init = mcpClient.initialize();
